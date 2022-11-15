@@ -26,7 +26,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         )]
 
     def validate_score(self, value):
-        """ Проверка возможности подписки на себя."""
+        """ Проверка вводимого значения."""
         if not 1 <= value <= 10:
             raise serializers.ValidationError(
                 'Введите значение от 0 до 10!')
