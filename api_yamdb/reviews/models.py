@@ -23,7 +23,9 @@ class Genre(models.Model):
     name = models.CharField(
         'Жанр',
         max_length=256)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(
+        unique=True
+    )
 
     def __str__(self):
         return {self.name}
@@ -37,11 +39,14 @@ class Title(models.Model):
     year = models.IntegerField(
         'Год выпуска',
         validators=[MaxValueValidator(datetime.date.today().year),
-                    MinValueValidator(0)]),
-    description = models.TextField()
+                    MinValueValidator(0)]
+    )
+    description = models.TextField(
+        blank=True,
+        null=True
+    )
     genre = models.ManyToManyField(
         Genre,
-        on_delete=models.CASCADE,
         related_name='titles'
     )
     category = models.ForeignKey(
