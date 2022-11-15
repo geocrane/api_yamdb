@@ -35,7 +35,7 @@ class Title(models.Model):
     )
     description = models.TextField()
     genre = models.ManyToManyField(
-        Genre, on_delete=models.CASCADE, related_name="titles"
+        Genre, related_name="titles"
     )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, related_name="titles"
