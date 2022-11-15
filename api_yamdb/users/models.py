@@ -3,7 +3,7 @@
 # from datetime import datetime, timedelta
 # from django.conf import settings
 from django.contrib.auth.models import (
-    AbstractBaseUser,
+    AbstractUser,
     BaseUserManager,
     PermissionsMixin,
 )
@@ -31,15 +31,9 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(db_index=True, max_length=255, unique=True)
-    email = models.EmailField(db_index=True, unique=True)
-    is_staff = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
-    objects = UserManager()
+class User(AbstractUser, PermissionsMixin):
+    bio = models.TextField()
+    role = models.CharField(max_length=255)
 
     def __str__(self):
         return self.email
