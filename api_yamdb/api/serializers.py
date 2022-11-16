@@ -2,7 +2,32 @@
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from reviews.models import Comment, Review
+from reviews.models import Category, Comment, Genre, Review, Title
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    """to write"""
+
+    class Meta:
+        """to write"""
+        fields = '__all__'
+        model = Title
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    """to write"""
+    class Meta:
+        """to write"""
+        fields = '__all__'
+        model = Category
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    """to write"""
+    class Meta:
+        """to write"""
+        fields = '__all__'
+        model = Genre
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -11,18 +36,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username')
 
-    title = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='name')
-
     class Meta:
         """ Добавляем следующие поля из модуля Review"""
         model = Review
-        fields = ('id', 'title', 'text', 'score', 'author', 'pub_date',)
-    validators = [
+        title = serializers.CharField(write_only=True)
+        fields = ('id', 'text', 'author', 'score', 'pub_date',)
+        validators = [
         UniqueTogetherValidator(
             queryset=Review.objects.all(),
-            fields=['title', 'author']
+            fields=['text', 'score']
         )]
 
     def validate_score(self, value):
