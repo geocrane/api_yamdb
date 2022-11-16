@@ -31,9 +31,9 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractUser, PermissionsMixin):
-    bio = models.TextField()
-    role = models.CharField(max_length=255)
+class User(AbstractUser):
+    bio = models.TextField(default=None, null=True)
+    role = models.CharField(max_length=255, default="user", null=True)
 
     def __str__(self):
         return self.email
