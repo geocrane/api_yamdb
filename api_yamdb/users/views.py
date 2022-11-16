@@ -1,7 +1,6 @@
-from rest_framework import status
-
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
+from django.http import Http404
+from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,6 +8,8 @@ from rest_framework.views import APIView
 
 # from .serializers import RegistrationSerializer, SignUpSerializer
 from .models import User
+
+CONFIRMATION_MESSAGE = "Ваш логин {user}, код подтверждения {token}"
 
 
 class SignUpAPIView(APIView):
@@ -18,20 +19,24 @@ class SignUpAPIView(APIView):
         user = User.objects.create_user(
             username=request.data["username"], email=request.data["email"]
         )
-        token = default_token_generator.make_token(user)
-        send_mail(
-            "Confirmation_code",
-            token,
-            "from@yamdb.ru",
-            [user.email],
-            fail_silently=False,
-        )
-        return Response(status=status.HTTP_201_CREATED)
+        user.email_user(
+            "Confirmation code",
+            CONFIRMATION_MESSAGE.format(
+                user=user.username,
+                token=default_token_generator.make_token(user),
+            ),
+        ),
+        return Response(status=status.HTTP_200_OK)
 
 
 class GetTokenAPIView(APIView):
     def post(self, request):
-        user = User.objects.get(username=request.data["username"])
+        username = request.data["username"]
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         if not default_token_generator.check_token(
             user, request.data["token"]
         ):
