@@ -1,6 +1,7 @@
 import datetime
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Avg
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
@@ -38,7 +39,7 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         'Год выпуска',
-        validators=[MaxValueValidator(datetime.date.today().year),
+        validators=[MaxValueValidator(datetime.datetime.now().year),
                     MinValueValidator(0)]
     )
     description = models.TextField(
@@ -55,6 +56,12 @@ class Title(models.Model):
         null=True,
         related_name='titles'
     )
+
+    @property
+    def rating(self):
+        if hasattr(self, '_rating'):
+            return self._rating
+        return self.review.aggregate(Avg('score'))
 
 
 class Review(models.Model):
