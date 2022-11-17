@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+sent_emails/
 build/
 develop-eggs/
 dist/
@@ -148,3 +149,4 @@ dmypy.json
 # папки со статикой и медиа
 media/
 
+request.http

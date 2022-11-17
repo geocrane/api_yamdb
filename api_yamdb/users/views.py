@@ -1,5 +1,6 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.http import Http404
+from django.shortcuts import get_object_or_404
+
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -32,10 +33,11 @@ class SignUpAPIView(APIView):
 class GetTokenAPIView(APIView):
     def post(self, request):
         username = request.data["username"]
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        user = get_object_or_404(User, username=username)
+        # try:
+
+        # except User.DoesNotExist:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
 
         if not default_token_generator.check_token(
             user, request.data["token"]
