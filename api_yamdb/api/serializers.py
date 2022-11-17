@@ -23,6 +23,23 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Genre
 
+class TitleSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(
+        many=True,
+        read_only=True)
+    category = CategorySerializer(
+        read_only=True)
+    rating = serializers.SerializerMethodField()
+    review = ReviewSerializer(many=True, read_only=True)
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
+                  'category', "review")
+        model = Title
+
+    def get_rating(self, obj):
+        return obj.rating
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     """ Настраиваем Serializers по модулю Review"""
@@ -43,27 +60,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             queryset=Review.objects.all(),
             fields=['title', 'author']
         )]
-
-
-class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(
-        many=True,
-        read_only=True)
-    category = CategorySerializer(
-        read_only=True)
-    rating = serializers.SerializerMethodField()
-    review = ReviewSerializer(many=True, read_only=True)
-
-    class Meta:
-        fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
-                  'category', "review")
-        model = Title
-
-    def get_rating(self, obj):
-        return obj.rating
-
-
-
 
     def validate_score(self, value):
         """ Проверка возможности подписки на себя."""
