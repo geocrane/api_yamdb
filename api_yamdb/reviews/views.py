@@ -20,9 +20,6 @@ class UserViewSet(viewsets.ModelViewSet):
             pass
 
 
-
-
-
 # class UserActionsViewSet(viewsets.ModelViewSet):
 #     queryset = User.objects.all()
 #     serializer_class = UserSerializer
