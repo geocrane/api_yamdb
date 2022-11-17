@@ -6,9 +6,10 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
+    AllowAny
 )
 
-from reviews.models import Comment, Review, Title, Category, Genre
+from reviews.models import Comment, Review, Title, Category, Genre, User
 from .permissions import IsUserOrReadOnly
 from .serializers import (
     TitleSerializer,
@@ -16,11 +17,19 @@ from .serializers import (
     CategorySerializer,
     ReviewSerializer,
     CommentSerializer,
+    UserSerializer
 )
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    pass
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+    lookup_field = "username"
+
+    def patch(self, request):
+        if self.kwargs["username"] == "me":
+            pass
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

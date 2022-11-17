@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import GetTokenAPIView, SignUpAPIView
 
-app_name = "authentication"
+app_name = "auth"
 
 urlpatterns = [
     path(

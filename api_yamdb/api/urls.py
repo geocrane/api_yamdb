@@ -10,6 +10,8 @@ from .views import (
     UserViewSet
 )
 
+app_name = "api"
+
 v1_router = DefaultRouter()
 v1_router.register("users", UserViewSet, basename="user")
 v1_router.register(r"titles", TitleViewSet)
