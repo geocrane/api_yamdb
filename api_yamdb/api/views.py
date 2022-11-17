@@ -82,10 +82,10 @@ class TitleViewSet(viewsets.ModelViewSet):
     search_fields = ("category__slug", "genre__slug", "name", "year")
     pagination_class = LimitOffsetPagination
 
-    def get_queryset(self):
-        return Review.objects.all().annotate(
-            _average_score=Avg("review__score")
-        )
+    # def get_queryset(self):
+    #     return Review.objects.all().annotate(
+    #         _average_score=Avg("review__score")
+    #     )
 
 
 class GenreViewSet(viewsets.ModelViewSet):
