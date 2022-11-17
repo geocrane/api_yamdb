@@ -36,26 +36,23 @@ class Title(models.Model):
         ),
     )
     year = models.IntegerField(
-        'Год выпуска',
-        validators=[MaxValueValidator(datetime.datetime.now().year),
-                    MinValueValidator(0)]
+        "Год выпуска",
+        validators=[
+            MaxValueValidator(datetime.datetime.now().year),
+            MinValueValidator(0),
+        ],
     )
-    description = models.TextField(
-        blank=True,
-        null=True
-    )
-    genre = models.ManyToManyField(
-        Genre, related_name="titles"
-    )
+    description = models.TextField(blank=True, null=True)
+    genre = models.ManyToManyField(Genre, related_name="titles")
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, related_name="titles"
     )
 
     @property
     def rating(self):
-        if hasattr(self, '_rating'):
+        if hasattr(self, "_rating"):
             return self._rating
-        return self.review.aggregate(Avg('score'))
+        return self.review.aggregate(Avg("score"))
 
 
 class Review(models.Model):
