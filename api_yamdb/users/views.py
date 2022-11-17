@@ -32,14 +32,11 @@ class SignUpAPIView(APIView):
 
 
 class GetTokenAPIView(APIView):
+    permission_classes = (AllowAny,)
+    
     def post(self, request):
         username = request.data["username"]
         user = get_object_or_404(User, username=username)
-        # try:
-
-        # except User.DoesNotExist:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
-
         if not default_token_generator.check_token(
             user, request.data["token"]
         ):

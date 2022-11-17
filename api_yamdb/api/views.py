@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework import viewsets, filters, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
-    AllowAny
+    AllowAny,
 )
 
 from reviews.models import Comment, Review, Title, Category, Genre, User
@@ -17,19 +18,39 @@ from .serializers import (
     CategorySerializer,
     ReviewSerializer,
     CommentSerializer,
-    UserSerializer
+    UserSerializer,
 )
+
+
+# class UserViewSet(viewsets.ModelViewSet):
+#     # queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#     permission_classes = (IsAuthenticated,)
+#     lookup_field = "username"
+
+#     def get_queryset(self):
+#         if self.kwargs["username"] == "me":
+#             return User.objects.get(username=self.request.user)
+#         return User.objects.all()
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = "username"
 
-    def patch(self, request):
-        if self.kwargs["username"] == "me":
-            pass
+    @action(methods=["get", "patch"], url_path="me", detail=False)
+    def get_self_user(self, request):
+        serializer = UserSerializer(request.user)
+        if request.method == "PATCH":
+            serializer = UserSerializer(
+                request.user, data=request.data, partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.data)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

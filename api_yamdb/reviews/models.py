@@ -11,6 +11,7 @@ from django.contrib.auth.models import (
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    password = models.CharField(null=True, max_length=128)
     bio = models.TextField(null=True)
     role = models.CharField(max_length=255, default="user", null=True)
 
