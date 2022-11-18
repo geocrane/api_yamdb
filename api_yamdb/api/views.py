@@ -4,13 +4,16 @@ from rest_framework.response import Response
 from rest_framework import viewsets, filters, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
-    IsAuthenticated,
     IsAuthenticatedOrReadOnly,
-    AllowAny
+    AllowAny,
 )
 
 from reviews.models import Comment, Review, Title, Category, Genre, User
-from .permissions import IsUserOrReadOnly
+from api.permissions import (
+    IsUserOrReadOnly,
+    IsAdminOrReadOnly,
+    IsModeratorOrReadOnly
+)
 from .serializers import (
     TitleSerializer,
     GenreSerializer,
@@ -36,7 +39,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Настройка отображения по модели Review"""
 
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (
+        IsUserOrReadOnly | IsAdminOrReadOnly | IsModeratorOrReadOnly
+    )
 
     def get_title(self):
         """Получаем произведения."""
@@ -55,7 +60,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsUserOrReadOnly]
+    permission_classes = (
+        IsUserOrReadOnly | IsAdminOrReadOnly | IsModeratorOrReadOnly
+    )
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
