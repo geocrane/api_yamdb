@@ -7,7 +7,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
-    AllowAny,
+    IsAdminUser,
 )
 
 from reviews.models import Comment, Review, Title, Category, Genre, User
@@ -19,37 +19,35 @@ from .serializers import (
     ReviewSerializer,
     CommentSerializer,
     UserSerializer,
+    NotRoleChanging,
 )
-
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     # queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     permission_classes = (IsAuthenticated,)
-#     lookup_field = "username"
-
-#     def get_queryset(self):
-#         if self.kwargs["username"] == "me":
-#             return User.objects.get(username=self.request.user)
-#         return User.objects.all()
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (
+        IsAuthenticated,
+        IsAdminUser,
+    )
     lookup_field = "username"
 
-    @action(methods=["get", "patch"], url_path="me", detail=False)
+    @action(
+        methods=["get", "patch"],
+        url_path="me",
+        permission_classes=(IsAuthenticated,),
+        detail=False,
+    )
     def get_self_user(self, request):
-        serializer = UserSerializer(request.user)
         if request.method == "PATCH":
-            serializer = UserSerializer(
-                request.user, data=request.data, partial=True
+            serializer = NotRoleChanging(
+                request.user,
+                data=request.data,
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
 

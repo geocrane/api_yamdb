@@ -9,17 +9,21 @@ from rest_framework.views import APIView
 
 from reviews.models import User
 
-# from .serializers import RegistrationSerializer, SignUpSerializer
+from .serializers import SignUpSerializer
 
 CONFIRMATION_MESSAGE = "Ваш логин {user}, код подтверждения {token}"
 
 
 class SignUpAPIView(APIView):
     permission_classes = (AllowAny,)
+    serializer_class = SignUpSerializer
 
     def post(self, request):
-        user = User.objects.create_user(
-            username=request.data["username"], email=request.data["email"]
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user, created = User.objects.get_or_create(
+            username=request.data["username"],
+            email=request.data["email"],
         )
         user.email_user(
             "Confirmation code",
@@ -33,7 +37,7 @@ class SignUpAPIView(APIView):
 
 class GetTokenAPIView(APIView):
     permission_classes = (AllowAny,)
-    
+
     def post(self, request):
         username = request.data["username"]
         user = get_object_or_404(User, username=username)
@@ -44,7 +48,6 @@ class GetTokenAPIView(APIView):
         refresh = RefreshToken.for_user(user)
         return Response(
             {
-                "refresh": str(refresh),
                 "access": str(refresh.access_token),
             }
         )

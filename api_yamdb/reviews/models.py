@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.db.models import Avg
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import (
@@ -10,10 +11,24 @@ from django.contrib.auth.models import (
 
 
 class User(AbstractUser):
+    USER = "user"
+    MODERATOR = "moderator"
+    ADMIN = "admin"
+    ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
     email = models.EmailField(unique=True)
-    password = models.CharField(null=True, max_length=128)
+    password = models.CharField(default="", max_length=128)
     bio = models.TextField(null=True)
-    role = models.CharField(max_length=255, default="user", null=True)
+    role = models.CharField(
+        max_length=255, choices=ROLES, default=USER, null=True
+    )
+
+    # class Meta:
+    #     constraints = [
+    #         models.CheckConstraint(
+    #             check=models.Q(username__exact="me"),
+    #             name="not_me_username",
+    #         ),
+    #     ]
 
     def __str__(self):
         return self.email
@@ -43,7 +58,7 @@ class Title(models.Model):
             MaxValueValidator(datetime.datetime.now().year),
             MinValueValidator(0),
         ],
-        default=1900
+        default=1900,
     )
     description = models.TextField(blank=True, null=True)
     genre = models.ManyToManyField(Genre, related_name="titles")
