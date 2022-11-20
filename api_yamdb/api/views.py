@@ -11,9 +11,15 @@ from rest_framework.permissions import (
 )
 
 from reviews.models import Comment, Review, Title, Category, Genre, User
-from .permissions import IsUserOrReadOnly
+from .permissions import (
+    IsUserOrReadOnly,
+    AdminPermissions,
+    ModeratorPermissions,
+    UserPermissions,
+)
 from .serializers import (
     TitleSerializer,
+    TitleListSerializer,
     GenreSerializer,
     CategorySerializer,
     ReviewSerializer,
@@ -27,15 +33,15 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (
-        IsAuthenticated,
-        IsAdminUser,
+        UserPermissions,
+        AdminPermissions,
     )
     lookup_field = "username"
 
     @action(
         methods=["get", "patch"],
         url_path="me",
-        permission_classes=(IsAuthenticated,),
+        permission_classes=(UserPermissions,),
         detail=False,
     )
     def get_self_user(self, request):
@@ -97,14 +103,23 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ("category__slug", "genre__slug", "name", "year")
-    pagination_class = LimitOffsetPagination
 
-    # def get_queryset(self):
-    #     return Review.objects.all().annotate(
-    #         _average_score=Avg("review__score")
-    #     )
+    def get_queryset(self):
+        if self.action in ("list", "retrieve"):
+            if (
+                Title.objects.prefetch_related("reviews").order_by("name")
+                is not None
+            ):
+                return Title.objects.all().annotate(
+                    rating=Avg("reviews__score")
+                )
+            return None
+        return Title.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return TitleListSerializer
+        return TitleSerializer
 
 
 class GenreViewSet(viewsets.ModelViewSet):

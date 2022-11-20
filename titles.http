@@ -1,0 +1,51 @@
+GET http://127.0.0.1:8000/api/v1/titles/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+
+
+### Добавление титла
+POST http://127.0.0.1:8000/api/v1/titles/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+
+{
+    "name": "Сборник",
+    "genre": ["poetry","novel"],
+    "category": "literature"
+}
+
+
+### Добавление категории
+POST http://127.0.0.1:8000/api/v1/categories/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+
+{
+    "slug": "literature",
+    "name": "литература"
+}
+
+### Добавление жанра
+POST http://127.0.0.1:8000/api/v1/genres/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+
+{
+    "slug": "poetry",
+    "name": "стихи"
+}
+
+
+###  Категория
+{
+  "id": 1,
+  "name": "литература",
+  "slug": "literature"
+}
+
+### Жанр
+{
+  "id": 1,
+  "name": "роман",
+  "slug": "novel"
+}

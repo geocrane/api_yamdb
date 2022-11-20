@@ -9,12 +9,12 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 
+USER = "user"
+MODERATOR = "moderator"
+ADMIN = "admin"
+ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
 
 class User(AbstractUser):
-    USER = "user"
-    MODERATOR = "moderator"
-    ADMIN = "admin"
-    ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
     email = models.EmailField(unique=True)
     password = models.CharField(default="", max_length=128)
     bio = models.TextField(null=True)
@@ -43,7 +43,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField("Жанр", max_length=256)
+    name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True)
 
     def __str__(self):

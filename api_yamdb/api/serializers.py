@@ -28,7 +28,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class NotRoleChanging(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = (
@@ -45,12 +44,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = "__all__"
         model = Category
-
-
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = "__all__"
-        model = Genre
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -82,11 +75,43 @@ class ReviewSerializer(serializers.ModelSerializer):
     ]
 
 
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["name", "slug"]
+        model = Genre
+
+
 class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, read_only=True)
-    category = CategorySerializer(read_only=True)
+    def validate(self, data):
+        if not data["genre"]:
+            raise serializers.ValidationError(
+                "Выберите жанр"
+            )
+        return data
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(), many=True)
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all())
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'description', 'genre',
+                  'category')
+        model = Title
+
+    # def create(self, validated_data):
+    #     if 'genre' not in self.initial_data:
+    #         raise serializers.ValidationError(
+    #             'Выберите жанр!')
+    #     title = Title.objects.create(**validated_data)
+    #     return title
+
+
+class TitleListSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
     rating = serializers.SerializerMethodField()
-    review = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         fields = (
@@ -97,18 +122,11 @@ class TitleSerializer(serializers.ModelSerializer):
             "description",
             "genre",
             "category",
-            "review",
         )
         model = Title
 
     def get_rating(self, obj):
         return obj.rating
-
-    def validate_score(self, value):
-        """Проверка возможности подписки на себя."""
-        if not 1 <= value <= 10:
-            raise serializers.ValidationError("Введите значение от 0 до 10!")
-        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):
