@@ -1,7 +1,7 @@
 """ Настройки админ панели."""
 from django.contrib import admin
 
-from reviews.models import Title, Category, Genre, Review, Comment
+from reviews.models import Title, Category, Genre, Review, Comment, User
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -17,3 +17,4 @@ admin.site.register(Category)
 admin.site.register(Genre)
 admin.site.register(Review)
 admin.site.register(Comment)
+admin.site.register(User)
