@@ -5,15 +5,6 @@ from reviews.models import Category, Genre, Title, Review, Comment, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # username = serializers.CharField(required=True)
-    # email = serializers.EmailField(required=True)
-
-    def validate(self, data):
-        if data["username"] == "me":
-            raise serializers.ValidationError(
-                "Имя 'me' недопустимо - сериализатор"
-            )
-        return data
 
     class Meta:
         model = User
@@ -28,6 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class NotRoleChanging(serializers.ModelSerializer):
+    username = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)
+    role = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -36,8 +31,8 @@ class NotRoleChanging(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "bio",
+            "role"
         )
-        read_only_fields = ("role",)
 
 
 class CategorySerializer(serializers.ModelSerializer):

@@ -12,7 +12,7 @@ POST http://localhost:8000/api/v1/auth/token/
 Content-Type: application/json
 
 {
-    "username": "user2",
+    "username": "user9",
     "token": "661-43c7fa770e79cc1c9db4"
 }
 
@@ -36,8 +36,8 @@ Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
 
 {
-    "username": "valid_username",
-    "email": "valid@yamdb.fake"
+    "username": "user7",
+    "email": "user2@user.user"
 }
 
 
@@ -58,10 +58,10 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 
 
 
-### Получить себя - user1
+### Получить себя - user2
 GET http://localhost:8000/api/v1/users/me/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNTIzODExLCJpYXQiOjE2Njg5MzE4MTEsImp0aSI6ImUzYWQ2OTQzYzU2YTQ1ODM4YWU4YzA5M2Y3MmM0ZmVmIiwidXNlcl9pZCI6Mn0.1JtO4TwGmzVVWcr6yW6uCk5SUbxYL8u7aVO12X3age8
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNTI1ODA5LCJpYXQiOjE2Njg5MzM4MDksImp0aSI6ImU1NWE4ZmI2Yzg0ZjQ4ZGFhYmNjODlkOThmOTE4ZGQyIiwidXNlcl9pZCI6Nn0.AsOs9ioll-XcuMNG9272wnizVG4tcP86FkLgbu_f_SA
 
 ### Patch себя - user2
 PATCH http://localhost:8000/api/v1/users/me/
@@ -69,9 +69,6 @@ Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNTI1ODA5LCJpYXQiOjE2Njg5MzM4MDksImp0aSI6ImU1NWE4ZmI2Yzg0ZjQ4ZGFhYmNjODlkOThmOTE4ZGQyIiwidXNlcl9pZCI6Nn0.AsOs9ioll-XcuMNG9272wnizVG4tcP86FkLgbu_f_SA
 
 {
-    "username": "user2",
-    "email": "user2@user.user",
-    "first_name": "User2",
-    "last_name": "5",
+    "role": "admin",
     "bio": "My bio"
 }

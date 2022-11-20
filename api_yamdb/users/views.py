@@ -9,21 +9,20 @@ from rest_framework.views import APIView
 
 from reviews.models import User
 
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer, GetTokenSerializer
 
 CONFIRMATION_MESSAGE = "Ваш логин {user}, код подтверждения {token}"
 
 
 class SignUpAPIView(APIView):
     permission_classes = (AllowAny,)
-    serializer_class = SignUpSerializer
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user, created = User.objects.get_or_create(
-            username=request.data["username"],
-            email=request.data["email"],
+            username=serializer.validated_data["username"],
+            email=serializer.validated_data["email"],
         )
         user.email_user(
             "Confirmation code",
@@ -32,17 +31,19 @@ class SignUpAPIView(APIView):
                 token=default_token_generator.make_token(user),
             ),
         ),
-        return Response(status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetTokenAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        username = request.data["username"]
+        serializer = GetTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data["username"]
         user = get_object_or_404(User, username=username)
         if not default_token_generator.check_token(
-            user, request.data["token"]
+            user, request.data.get["token"]
         ):
             return Response("Пользователь и код подтверждения - не совпадают")
         refresh = RefreshToken.for_user(user)

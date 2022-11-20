@@ -4,16 +4,21 @@ from reviews.models import User
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    username = serializers.CharField()
-    email = serializers.EmailField()
-    
+
     def validate(self, data):
-        if data["username"] == "me":
+        if data.get("username") == "me":
             raise serializers.ValidationError(
-                "Имя 'me' недопустимо - сериализатор"
+                "Имя 'me' недопустимо"
             )
         return data
 
     class Meta:
         model = User
         fields = ["username", "email"]
+
+
+class GetTokenSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ["username"]
