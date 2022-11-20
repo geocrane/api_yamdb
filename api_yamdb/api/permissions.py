@@ -1,28 +1,31 @@
 """ Настравиваем уровни доступа."""
 from rest_framework import permissions
 
+USER = "user"
+MODERATOR = "moderator"
+ADMIN = "admin"
+
+class AdminPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if not request.auth:
+            return False
+        if request.user.role in (ADMIN,) or request.user.is_staff:
+            return True
+
 
 class UserPermissions(permissions.BasePermission):
-
-    def has_object_permission(self, request, view, obj):
-        return request.user.role == "user"
-
+    def has_permission(self, request, view):
+        if not request.auth:
+            return False
+        if request.user.role in (USER, MODERATOR, ADMIN):
+            return True
 
 class ModeratorPermissions(permissions.BasePermission):
-
-    def has_object_permission(self, request, view, obj):
-        return (request.user.role == "Модератор")
-
-
-class IsAdminOrReadOnly(permissions.BasePermission):
-    """ Настраиваем уровень разрешения в зависимости типа авторизации,
-    Анонимный и авторизованный пользователь видят текущую запись.
-    Возможность удаления есть только у админа."""
-
     def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
+        if not request.auth:
+            return False
+        if request.user.role in (MODERATOR, ADMIN):
             return True
-        return bool(request.user and request.user.is_staff)
 
 
 class IsUserOrReadOnly(permissions.BasePermission):

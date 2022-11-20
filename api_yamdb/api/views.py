@@ -103,9 +103,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     serializer_class = ReviewSerializer
     permission_classes = (
-        ModeratorPermissions,
+        IsUserOrReadOnly,
         IsAdminOrReadOnly,
-        IsUserOrReadOnly
+        IsUserOrReadOnly,
+        #ModeratorPermissions,
     )
     pagination_class = PageNumberPagination
 
@@ -127,9 +128,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (
-        ModeratorPermissions,
+        IsUserOrReadOnly,
         IsAdminOrReadOnly,
-        IsUserOrReadOnly
+        IsUserOrReadOnly,
+        #ModeratorPermissions,
     )
 
     def get_queryset(self):

@@ -59,14 +59,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    genre = serializers.CharField(required=True)
 
     class Meta:
-        fields = ('name', 'slug', )
+        fields = ('name', 'slug',)
         model = Genre
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    
     genre = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(), many=True)
@@ -79,24 +79,11 @@ class TitleSerializer(serializers.ModelSerializer):
                   'category')
         model = Title
 
-    def create(self, validated_data):
-        if 'genre' not in self.initial_data:
+    def validate(self, data):
+        if not data['genre']:
             raise serializers.ValidationError(
-                'Выберите жанр!')
-        title = Title.objects.create(**validated_data)
-        return title
-
-    """def validate_genre(self, value):
-        if value.id is None:
-            raise serializers.ValidationError('Проверьте жанр')
-        return value"""
-
-    """def validate(self, data):
-        for data['genre'] in genre:
-            if genre is None:
-                raise serializers.ValidationError(
-                'Имя не может совпадать с цветом!')
-            return data"""
+                'Выберите жанр')
+        return data
 
 
 class TitleListSerializer(serializers.ModelSerializer):
