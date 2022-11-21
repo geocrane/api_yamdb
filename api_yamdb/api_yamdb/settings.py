@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "api.apps.ApiConfig",
     "reviews.apps.ReviewsConfig",
-    "users.apps.UsersConfig",
 ]
 
 AUTH_USER_MODEL = "reviews.User"
