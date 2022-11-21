@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Avg
@@ -108,7 +109,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleListSerializer
-    # filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("category__slug", "genre__slug", "name", "year")
     pagination_class = LimitOffsetPagination
 
