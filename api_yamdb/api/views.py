@@ -1,39 +1,36 @@
-from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Avg
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework import viewsets, filters, status
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import (
-    AllowAny,
-)
+from rest_framework_simplejwt.tokens import RefreshToken
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from reviews.models import Comment, Review, Title, Category, Genre, User
+from .filters import TitleFilter
 from .permissions import (
+    AdminOrReadOnly,
     AdminPermissions,
+    AuthorOrReadOnly,
     ModeratorPermissions,
     UserPermissions,
-    IsAdminOrReadOnly,
-    AuthorPermissions
 )
 from .serializers import (
-    TitleSerializer,
-    TitleListSerializer,
-    GenreSerializer,
     CategorySerializer,
-    ReviewSerializer,
     CommentSerializer,
-    UserSerializer,
-    NotRoleChanging,
-    SignUpSerializer,
+    GenreSerializer,
     GetTokenSerializer,
+    NotRoleChanging,
+    ReviewSerializer,
+    SignUpSerializer,
+    TitleListSerializer,
+    TitleSerializer,
+    UserSerializer,
 )
-
 
 CONFIRMATION_MESSAGE = "Ваш логин {user}, код подтверждения {token}"
 
@@ -108,17 +105,25 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleListSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ("category__slug", "genre__slug", "name", "year")
+    filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
 
     def get_permissions(self):
-        if self.request.method == 'GET':
-            self.permission_classes = [AllowAny, ]
+        if self.request.method == "GET":
+            self.permission_classes = [
+                AllowAny,
+            ]
         else:
-            self.permission_classes = [AdminPermissions, ]
+            self.permission_classes = [
+                AdminPermissions,
+            ]
         return super(TitleViewSet, self).get_permissions()
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return TitleListSerializer
+        return TitleSerializer
 
     def get_queryset(self):
         if self.action in ("list", "retrieve"):
@@ -131,12 +136,6 @@ class TitleViewSet(viewsets.ModelViewSet):
                 )
             return Title.objects.all().set(rating=0)
         return Title.objects.all()
-
-    # @action(detail=False, methods=["get", "post", "delete", "patch"])
-    def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
-            return TitleListSerializer
-        return TitleSerializer
 
 
 class GenreViewSet(
@@ -151,7 +150,7 @@ class GenreViewSet(
     search_fields = ("name",)
     lookup_field = "slug"
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
 
 
 class CategoryViewSet(
@@ -166,27 +165,29 @@ class CategoryViewSet(
     search_fields = ("name",)
     lookup_field = "slug"
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """Настройка отображения по модели Review"""
-
     def get_permissions(self):
-        if self.request.method == 'GET':
-            self.permission_classes = [AllowAny, ]
-        elif self.request.method == 'DELETE':
-            self.permission_classes = [ModeratorPermissions, ]
+        if self.request.method == "GET":
+            self.permission_classes = [
+                AllowAny,
+            ]
+        elif self.request.method == "DELETE":
+            self.permission_classes = [
+                ModeratorPermissions,
+            ]
         else:
-            self.permission_classes = [AuthorPermissions, ]
+            self.permission_classes = [
+                AuthorOrReadOnly,
+            ]
         return super(ReviewViewSet, self).get_permissions()
 
     serializer_class = ReviewSerializer
-    # permission_classes = (AuthorPermissions,)
     pagination_class = LimitOffsetPagination
 
     def get_title(self):
-        """Получаем произведения."""
         title_id = self.kwargs.get("title_id")
         return get_object_or_404(Title, pk=title_id)
 
@@ -198,20 +199,23 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """Настройка отображения по модели Comment"""
-
     def get_permissions(self):
-        if self.request.method == 'GET':
-            self.permission_classes = [AllowAny, ]
-        elif self.request.method == 'DELETE':
-            self.permission_classes = [ModeratorPermissions, ]
+        if self.request.method == "GET":
+            self.permission_classes = [
+                AllowAny,
+            ]
+        elif self.request.method == "DELETE":
+            self.permission_classes = [
+                ModeratorPermissions,
+            ]
         else:
-            self.permission_classes = [AuthorPermissions, ]
+            self.permission_classes = [
+                AuthorOrReadOnly,
+            ]
         return super(CommentViewSet, self).get_permissions()
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    # permission_classes = [AuthorPermissions, ]
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
@@ -225,7 +229,3 @@ class CommentViewSet(viewsets.ModelViewSet):
             review=get_object_or_404(Review, pk=review_id),
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # def perform_update(self, serializer):
-    #     serializer.save()
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
