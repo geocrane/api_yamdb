@@ -1,18 +1,14 @@
 import datetime
 from django.db import models
-from django.db.models import Avg
-from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractUser,
-    BaseUserManager,
-)
+from django.contrib.auth.models import AbstractUser
 
 USER = "user"
 MODERATOR = "moderator"
 ADMIN = "admin"
 ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
+
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -21,14 +17,6 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=255, choices=ROLES, default=USER, null=True
     )
-
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             check=models.Q(username__exact="me"),
-    #             name="not_me_username",
-    #         ),
-    #     ]
 
     def __str__(self):
         return self.email
@@ -39,15 +27,15 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, max_length=50)
 
     def __str__(self):
-        return {self.name}
+        return self.name
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField("Жанр", max_length=256)
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return {self.name}
+        return self.name
 
 
 class Title(models.Model):
@@ -66,11 +54,8 @@ class Title(models.Model):
         Category, on_delete=models.SET_NULL, null=True, related_name="titles"
     )
 
-    @property
-    def rating(self):
-        if hasattr(self, "_rating"):
-            return self._rating
-        return self.review.aggregate(Avg("score"))
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):
@@ -102,21 +87,32 @@ class Comment(models.Model):
     )
 
 
-# class UserManager(BaseUserManager):
-#     def create_user(self, username, email, password=None):
-#         if username is None:
-#             raise TypeError("Поле username - обязательное")
-#         if email is None:
-#             raise TypeError("Поле email - обязательное")
-#      user = self.model(username=username, email=self.normalize_email(email))
-#         user.set_password(password)
-#         user.save()
-#         return user
-#     def create_superuser(self, username, email, password):
-#         if password is None:
-#             raise TypeError("Пароль суперпользователя - обязателен")
-#         user = self.create_user(username, email, password)
-#         user.is_superuser = True
-#         user.is_staff = True
-#         user.save()
-#         return user
+class Review(models.Model):
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reviews"
+    )
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE, related_name="reviews"
+    )
+    text = models.TextField()
+    score = models.IntegerField(
+        default=0,
+        null=True,
+        validators=[MaxValueValidator(10), MinValueValidator(0)],
+    )
+    pub_date = models.DateTimeField(
+        "Дата публикации отзыва", auto_now_add=True, db_index=True
+    )
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="comments"
+    )
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name="comments"
+    )
+    text = models.TextField()
+    pub_date = models.DateTimeField(
+        "Дата публикации комментария", auto_now_add=True, db_index=True
+    )

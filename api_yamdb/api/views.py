@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from rest_framework import mixins
 from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Avg
 from rest_framework.response import Response
@@ -8,10 +9,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-    IsAdminUser,
-    AllowAny
+    AllowAny,
 )
 
 from reviews.models import Comment, Review, Title, Category, Genre, User
@@ -20,6 +18,7 @@ from .permissions import (
     AdminPermissions,
     ModeratorPermissions,
     UserPermissions,
+    IsAdminOrReadOnly,
 )
 from .serializers import (
     TitleSerializer,
@@ -31,7 +30,7 @@ from .serializers import (
     UserSerializer,
     NotRoleChanging,
     SignUpSerializer,
-    GetTokenSerializer
+    GetTokenSerializer,
 )
 
 
@@ -106,19 +105,77 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleListSerializer
+    # filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ("category__slug", "genre__slug", "name", "year")
+    pagination_class = LimitOffsetPagination
+    permission_classes = (IsAdminOrReadOnly,)
+
+    def get_queryset(self):
+        if self.action in ("list", "retrieve"):
+            if (
+                Title.objects.prefetch_related("reviews").order_by("name")
+                is not None
+            ):
+                return Title.objects.all().annotate(
+                    rating=Avg("reviews__score")
+                )
+            return Title.objects.all().set(rating=0)
+        return Title.objects.all()
+
+    @action(detail=False, methods=["get", "post", "delete", "patch"])
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return TitleListSerializer
+        return TitleSerializer
+
+
+class GenreViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
+    lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class CategoryViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
+    lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
+    permission_classes = (IsAdminOrReadOnly,)
+
+
 class ReviewViewSet(viewsets.ModelViewSet):
     """Настройка отображения по модели Review"""
 
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (UserPermissions,)
+    pagination_class = LimitOffsetPagination
 
     def get_title(self):
         """Получаем произведения."""
-        title_id = self.kwargs.get("title_id ")
+        title_id = self.kwargs.get("title_id")
         return get_object_or_404(Title, pk=title_id)
 
     def get_queryset(self):
-        return self.get_title().review.all()
+        return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, title=self.get_title())
@@ -129,7 +186,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsUserOrReadOnly]
+    permission_classes = (
+        UserPermissions,
+    )
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
@@ -147,41 +206,3 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-
-    def get_queryset(self):
-        if self.action in ("list", "retrieve"):
-            if (
-                Title.objects.prefetch_related("reviews").order_by("name")
-                is not None
-            ):
-                return Title.objects.all().annotate(
-                    rating=Avg("reviews__score")
-                )
-            return None
-        return Title.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
-            return TitleListSerializer
-        return TitleSerializer
-
-
-class GenreViewSet(viewsets.ModelViewSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = "name"
-    pagination_class = LimitOffsetPagination
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = "name"
-    pagination_class = LimitOffsetPagination

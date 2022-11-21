@@ -26,11 +26,6 @@ class UserPermissions(permissions.BasePermission):
             return True
 
 
-class ModeratorPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return request.user.role == "Модератор"
-
-
 class IsUserOrReadOnly(permissions.BasePermission):
     """Настраиваем уровень разрешения в зависимости от авторизации
     и автора. Только автор может корректировать свои записи.
@@ -43,3 +38,18 @@ class IsUserOrReadOnly(permissions.BasePermission):
             request.method in permissions.SAFE_METHODS
             or obj.author == request.user
         )
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """ Настраиваем уровень разрешения в зависимости типа авторизации,
+    Анонимный и авторизованный пользователь видят текущую запись.
+    Возможность удаления есть только у админа."""
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if not request.auth:
+            return False
+        if request.user.role in (ADMIN) or request.user.is_staff:
+            return True
+        return False
