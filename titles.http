@@ -10,8 +10,9 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 
 {
     "name": "Сборник",
-    "genre": ["poetry","novel"],
-    "category": "literature"
+    "genre": ["poetry"],
+    "category": "literature",
+    "year": 1900
 }
 
 
@@ -21,8 +22,8 @@ Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
 
 {
-    "slug": "literature",
-    "name": "литература"
+    "slug": "music",
+    "name": "музыка"
 }
 
 ### Добавление жанра
@@ -39,8 +40,8 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 ###  Категория
 {
   "id": 1,
-  "name": "литература",
-  "slug": "literature"
+  "name": "музыка",
+  "slug": "music"
 }
 
 ### Жанр
@@ -48,4 +49,27 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
   "id": 1,
   "name": "роман",
   "slug": "novel"
+}
+
+### Добавление титла
+PATCH http://127.0.0.1:8000/api/v1/titles/1/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+
+{
+    "name": "Сборник2",
+    "category": "music"
+}
+
+###
+GET http://127.0.0.1:8000/api/v1/titles/1/reviews/
+
+
+### Добавление титла
+DELETE http://127.0.0.1:8000/api/v1/titles/1/reviews/1/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+
+{
+    "text": "Сборник2"
 }

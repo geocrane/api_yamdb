@@ -129,9 +129,9 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """ Проверка вводимых данных"""
-        if not data.get('genre'):
-            raise serializers.ValidationError(
-                'Выберите жанр')
+        # if not data.get('genre'):
+        #     raise serializers.ValidationError(
+        #         'Выберите жанр')
         if not data.get('category'):
             raise serializers.ValidationError(
                 'Выберите категорию!')
@@ -169,12 +169,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         """ Добавляем следующие поля из модуля Review"""
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Review.objects.all(),
-                fields=['text', 'score']
-            )
-        ]
+        # validators = [
+        #     UniqueTogetherValidator(
+        #         queryset=Review.objects.all(),
+        #         fields=['text', 'score']
+        #     )
+        # ]
 
     def validate_score(self, value):
         """ Проверка вводимого значения диапазон чисел."""

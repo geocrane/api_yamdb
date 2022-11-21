@@ -14,11 +14,11 @@ from rest_framework.permissions import (
 
 from reviews.models import Comment, Review, Title, Category, Genre, User
 from .permissions import (
-    IsUserOrReadOnly,
     AdminPermissions,
     ModeratorPermissions,
     UserPermissions,
     IsAdminOrReadOnly,
+    AuthorPermissions
 )
 from .serializers import (
     TitleSerializer,
@@ -111,7 +111,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     # filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("category__slug", "genre__slug", "name", "year")
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAdminOrReadOnly,)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny, ]
+        else:
+            self.permission_classes = [AdminPermissions, ]
+        return super(TitleViewSet, self).get_permissions()
 
     def get_queryset(self):
         if self.action in ("list", "retrieve"):
@@ -125,7 +131,7 @@ class TitleViewSet(viewsets.ModelViewSet):
             return Title.objects.all().set(rating=0)
         return Title.objects.all()
 
-    @action(detail=False, methods=["get", "post", "delete", "patch"])
+    # @action(detail=False, methods=["get", "post", "delete", "patch"])
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return TitleListSerializer
@@ -165,8 +171,17 @@ class CategoryViewSet(
 class ReviewViewSet(viewsets.ModelViewSet):
     """Настройка отображения по модели Review"""
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny, ]
+        elif self.request.method == 'DELETE':
+            self.permission_classes = [ModeratorPermissions, ]
+        else:
+            self.permission_classes = [AuthorPermissions, ]
+        return super(ReviewViewSet, self).get_permissions()
+
     serializer_class = ReviewSerializer
-    permission_classes = (UserPermissions,)
+    # permission_classes = (AuthorPermissions,)
     pagination_class = LimitOffsetPagination
 
     def get_title(self):
@@ -184,11 +199,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Настройка отображения по модели Comment"""
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny, ]
+        elif self.request.method == 'DELETE':
+            self.permission_classes = [ModeratorPermissions, ]
+        else:
+            self.permission_classes = [AuthorPermissions, ]
+        return super(CommentViewSet, self).get_permissions()
+
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (
-        UserPermissions,
-    )
+    # permission_classes = [AuthorPermissions, ]
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
@@ -203,6 +225,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_update(self, serializer):
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # def perform_update(self, serializer):
+    #     serializer.save()
+    #     return Response(serializer.data, status=status.HTTP_200_OK)

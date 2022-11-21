@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "username": "user2",
-    "email": "user2@user.user"
+    "email": "user2@admin.admin"
 }
 
 ### Получить токен
@@ -12,8 +12,8 @@ POST http://localhost:8000/api/v1/auth/token/
 Content-Type: application/json
 
 {
-    "username": "user9",
-    "token": "661-43c7fa770e79cc1c9db4"
+    "username": "user2",
+    "token": "662-fad515350fecce408908"
 }
 
 ###
