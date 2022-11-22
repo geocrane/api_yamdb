@@ -52,7 +52,6 @@ def user_superuser_client(token_user_superuser):
 def token_admin(admin):
     from rest_framework_simplejwt.tokens import AccessToken
     token = AccessToken.for_user(admin)
-    print(f"ТОКЕНТОКЕНТОКЕН: {token}")
 
     return {
         'access': str(token),

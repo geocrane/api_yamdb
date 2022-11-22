@@ -19,8 +19,8 @@ class User(AbstractUser):
         max_length=150, unique=True, validators=[UnicodeUsernameValidator]
     )
     email = models.EmailField(max_length=150, unique=True)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=150, default="")
+    last_name = models.CharField(max_length=150, default="")
     bio = models.TextField(null=True)
     role = models.CharField(
         max_length=max(len(role[0]) for role in ROLES),
@@ -28,8 +28,16 @@ class User(AbstractUser):
         default=USER,
     )
 
+    @property
+    def is_admin(self):
+        return bool(self.role == ADMIN)
+
+    @property
+    def is_moderator(self):
+        return bool(self.role == MODERATOR)
+
     def __str__(self):
-        return self.email
+        return self.username
 
 
 class Category(models.Model):
