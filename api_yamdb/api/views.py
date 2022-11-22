@@ -91,15 +91,11 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
     )
     def get_self_user(self, request):
-        if request.method == "PATCH":
-            serializer = NotRoleChanging(
-                request.user,
-                data=request.data,
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
-        serializer = UserSerializer(request.user)
+        if request.method != "PATCH":
+            return Response(UserSerializer(request.user).data)
+        serializer = NotRoleChanging(request.user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
 
 
