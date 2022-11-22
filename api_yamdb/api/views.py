@@ -36,7 +36,7 @@ CONFIRMATION_MESSAGE = "Ваш логин {user}, код подтвержден�
 
 
 class SignUpAPIView(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
