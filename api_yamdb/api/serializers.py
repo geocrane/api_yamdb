@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from .validators import validate_username, is_email_exist, is_user_exist, validate_year
+from .validators import validate_username, is_email_exist, is_user_exist
 
 
 class SignUpSerializer(serializers.Serializer):
