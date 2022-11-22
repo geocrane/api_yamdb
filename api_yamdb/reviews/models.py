@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import (
@@ -7,6 +5,7 @@ from django.core.validators import (
     MinValueValidator,
 )
 from django.db import models
+from api.validators import validate_year
 
 USER = "user"
 MODERATOR = "moderator"
@@ -64,7 +63,7 @@ class Title(models.Model):
     name = models.TextField("Название")
     year = models.IntegerField(
         "Год выпуска",
-        validators=[MaxValueValidator(datetime.datetime.now().year), ]
+        validators=(validate_year,)
     )
     description = models.TextField(blank=True, null=True)
     genre = models.ManyToManyField(Genre, related_name="titles")

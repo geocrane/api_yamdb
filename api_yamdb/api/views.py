@@ -108,38 +108,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
-
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = [
-                AllowAny,
-            ]
-        else:
-            self.permission_classes = [
-                AdminPermissions,
-            ]
-        return super(TitleViewSet, self).get_permissions()
+    permission_classes = (AdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return TitleListSerializer
         return TitleSerializer
-
-    def get_queryset(self):
-        if self.action in ("list", "retrieve"):
-            if (
-                Title.objects.prefetch_related("reviews").order_by("name")
-                is not None
-            ):
-                return Title.objects.all().annotate(
-                    rating=Avg("reviews__score")
-                )
-            return Title.objects.all().set(rating=0)
-        return Title.objects.all()
 
 
 class GenreViewSet(

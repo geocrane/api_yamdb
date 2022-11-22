@@ -1,4 +1,7 @@
+import datetime as dt
 import re
+
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from reviews.models import User
 
@@ -28,3 +31,9 @@ def validate_username(value):
     if value == "me":
         raise serializers.ValidationError("Имя 'me' недопустимо")
     return value
+
+
+def validate_year(value):
+    year = dt.date.today().year
+    if not 0 <= value <= year:
+        raise ValidationError("Проверьте год!")
