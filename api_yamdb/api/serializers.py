@@ -1,8 +1,7 @@
-import datetime as dt
-
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
+from .validators import validate_year
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -71,16 +70,11 @@ class TitleSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         slug_field="slug", queryset=Category.objects.all()
     )
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         fields = ("id", "name", "year", "description", "genre", "category")
         model = Title
-
-    def validate_year(self, value):
-        year = dt.date.today().year
-        if not 0 <= value <= year:
-            raise serializers.ValidationError("Проверьте год!")
-        return value
 
 
 class TitleListSerializer(serializers.ModelSerializer):
@@ -97,6 +91,12 @@ class TitleListSerializer(serializers.ModelSerializer):
                   "description",
                   "genre",
                   "category")
+        read_only_fields = ("name",
+                            "year",
+                            "rating",
+                            "description",
+                            "genre",
+                            "category")
 
     def get_rating(self, obj):
         return obj.rating
