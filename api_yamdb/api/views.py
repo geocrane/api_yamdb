@@ -24,7 +24,7 @@ from .serializers import (
     CommentSerializer,
     GenreSerializer,
     GetTokenSerializer,
-    NotRoleChanging,
+    RoleReadOnly,
     ReviewSerializer,
     SignUpSerializer,
     TitleListSerializer,
@@ -83,11 +83,11 @@ class GetTokenAPIView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    permission_classes = (AdminPermissions,)
     serializer_class = UserSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ("username",)
     pagination_class = LimitOffsetPagination
-    permission_classes = (AdminPermissions,)
     lookup_field = "username"
 
     @action(
@@ -99,7 +99,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_self_user(self, request):
         if request.method != "PATCH":
             return Response(UserSerializer(request.user).data)
-        serializer = NotRoleChanging(request.user, data=request.data)
+        serializer = RoleReadOnly(request.user, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
