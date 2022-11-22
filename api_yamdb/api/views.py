@@ -99,7 +99,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_self_user(self, request):
         if request.method != "PATCH":
             return Response(UserSerializer(request.user).data)
-        serializer = RoleReadOnly(request.user, data=request.data)
+        serializer = RoleReadOnly(
+            request.user, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
