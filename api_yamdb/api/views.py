@@ -15,8 +15,6 @@ from .filters import TitleFilter
 from .permissions import (
     AdminOrReadOnly,
     AdminPermissions,
-    AuthorOrReadOnly,
-    ModeratorAndAdminPermissions,
     AuthorOrReviewerOrReadOnly,
 )
 from .serializers import (
