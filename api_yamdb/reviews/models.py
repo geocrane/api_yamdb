@@ -1,7 +1,11 @@
 import datetime
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
 from django.db import models
 
 USER = "user"
@@ -11,11 +15,17 @@ ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    password = models.CharField(default="", max_length=128)
+    username = models.CharField(
+        max_length=150, unique=True, validators=UnicodeUsernameValidator
+    )
+    email = models.EmailField(max_length=150, unique=True)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     bio = models.TextField(null=True)
     role = models.CharField(
-        max_length=255, choices=ROLES, default=USER, null=True
+        max_length=max(len(role[0]) for role in ROLES),
+        choices=ROLES,
+        default=USER,
     )
 
     def __str__(self):
