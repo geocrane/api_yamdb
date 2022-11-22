@@ -37,8 +37,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RoleReadOnly(UserSerializer):
 
-    class Meta:
-        read_only_fields = ['role']
+    class Meta(UserSerializer.Meta):
+        read_only_fields = ('role',)
 
 
 class CategorySerializer(serializers.ModelSerializer):
