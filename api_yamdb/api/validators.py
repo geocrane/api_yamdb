@@ -16,7 +16,7 @@ def is_email_exist(value):
             "Пользователь с таким email уже зарегистрирован"
         )
     return value
-    
+
 
 def validate_username(value):
     if not re.match("^[A-Za-z0-9@._-]*$", value):
