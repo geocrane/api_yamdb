@@ -17,7 +17,7 @@ class User(AbstractUser):
     username = models.CharField(
         max_length=150, unique=True, validators=[UnicodeUsernameValidator]
     )
-    email = models.EmailField(max_length=150, unique=True)
+    email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150, default="")
     last_name = models.CharField(max_length=150, default="")
     bio = models.TextField(null=True)
@@ -85,7 +85,7 @@ class Review(models.Model):
     text = models.TextField()
     score = models.IntegerField(
         default=0,
-        validators=[MaxValueValidator(10), MinValueValidator(0)],
+        validators=[MaxValueValidator(10), MinValueValidator(1)],
     )
     pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
 

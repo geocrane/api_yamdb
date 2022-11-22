@@ -24,7 +24,7 @@ from .serializers import (
     CommentSerializer,
     GenreSerializer,
     GetTokenSerializer,
-    NotRoleChanging,
+    RoleReadOnly,
     ReviewSerializer,
     SignUpSerializer,
     TitleListSerializer,
@@ -33,18 +33,22 @@ from .serializers import (
 )
 
 CONFIRMATION_MESSAGE = "Ваш логин {user}, код подтверждения {token}"
+CONFIRMATION_IS_NOT_MATCH = "Пользователь и код подтверждения - не совпадают"
 
 
 class SignUpAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = SignUpSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user, created = User.objects.get_or_create(
-            username=serializer.validated_data["username"],
-            email=serializer.validated_data["email"],
-        )
+        username = request.data.get("username")
+        email = request.data.get("email")
+        request_data = dict(username=username, email=email)
+        user = User.objects.filter(username=username)
+        if user and (user[0].email == email):
+            user = User.objects.get(**request_data)
+        else:
+            SignUpSerializer(data=request.data).is_valid(raise_exception=True)
+            user = User.objects.create(**request_data)
         user.email_user(
             "Confirmation code",
             CONFIRMATION_MESSAGE.format(
@@ -52,21 +56,23 @@ class SignUpAPIView(APIView):
                 token=default_token_generator.make_token(user),
             ),
         ),
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(request.data, status=status.HTTP_200_OK)
 
 
 class GetTokenAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = GetTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data["username"]
-        user = get_object_or_404(User, username=username)
+        GetTokenSerializer(data=request.data).is_valid(raise_exception=True)
+        user = get_object_or_404(User, username=request.data.get("username"))
         if not default_token_generator.check_token(
-            user, request.data.get("token")
+            user, request.data.get("confirmation_code")
         ):
-            return Response("Пользователь и код подтверждения - не совпадают")
+            return Response(
+                CONFIRMATION_IS_NOT_MATCH,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         refresh = RefreshToken.for_user(user)
         return Response(
             {
@@ -77,11 +83,11 @@ class GetTokenAPIView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    permission_classes = (AdminPermissions,)
     serializer_class = UserSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ("username",)
     pagination_class = LimitOffsetPagination
-    permission_classes = (AdminPermissions,)
     lookup_field = "username"
 
     @action(
@@ -93,7 +99,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_self_user(self, request):
         if request.method != "PATCH":
             return Response(UserSerializer(request.user).data)
-        serializer = NotRoleChanging(request.user, data=request.data)
+        serializer = RoleReadOnly(
+            request.user, data=request.data, partial=True
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
