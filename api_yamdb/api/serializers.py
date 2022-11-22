@@ -4,12 +4,14 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from .validators import validate_username, validate_email
+from .validators import validate_username, is_email_exist, is_user_exist
 
 
 class SignUpSerializer(serializers.Serializer):
-    username = serializers.CharField(validators=[validate_username])
-    email = serializers.EmailField(validators=[validate_email])
+    username = serializers.CharField(
+        validators=[validate_username, is_user_exist]
+    )
+    email = serializers.EmailField(validators=[is_email_exist])
 
 
 class GetTokenSerializer(serializers.Serializer):
