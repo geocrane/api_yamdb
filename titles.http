@@ -6,20 +6,20 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 ### Добавление титла
 POST http://127.0.0.1:8000/api/v1/titles/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzQ4ODk2LCJqdGkiOiJmOTk5ZDM4N2JjNmY0MmFiOTgwZTIyZTgwYzk3NDlhZSIsInVzZXJfaWQiOjJ9.Ug_JpZtmhVbLsFah2QaSjlOTzGCGYqf8UWfmtFQJX9A
 
 {
     "name": "Сборник",
     "genre": ["poetry"],
-    "category": "literature",
-    "year": 1900
+    "category": "music",
+    "year": 0
 }
 
 
 ### Добавление категории
 POST http://127.0.0.1:8000/api/v1/categories/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzQ4ODk2LCJqdGkiOiJmOTk5ZDM4N2JjNmY0MmFiOTgwZTIyZTgwYzk3NDlhZSIsInVzZXJfaWQiOjJ9.Ug_JpZtmhVbLsFah2QaSjlOTzGCGYqf8UWfmtFQJX9A
 
 {
     "slug": "music",
@@ -29,7 +29,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 ### Добавление жанра
 POST http://127.0.0.1:8000/api/v1/genres/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzQ4ODk2LCJqdGkiOiJmOTk5ZDM4N2JjNmY0MmFiOTgwZTIyZTgwYzk3NDlhZSIsInVzZXJfaWQiOjJ9.Ug_JpZtmhVbLsFah2QaSjlOTzGCGYqf8UWfmtFQJX9A
 
 {
     "slug": "poetry",
@@ -64,6 +64,16 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 ###
 GET http://127.0.0.1:8000/api/v1/titles/1/reviews/
 
+
+###
+POST http://127.0.0.1:8000/api/v1/titles/1/reviews/
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzQ4ODk2LCJqdGkiOiJmOTk5ZDM4N2JjNmY0MmFiOTgwZTIyZTgwYzk3NDlhZSIsInVzZXJfaWQiOjJ9.Ug_JpZtmhVbLsFah2QaSjlOTzGCGYqf8UWfmtFQJX9A
+
+{
+    "text": "Отзыв",
+    "score": 10
+}
 
 ### Добавление титла
 DELETE http://127.0.0.1:8000/api/v1/titles/1/reviews/1/

@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -16,8 +16,8 @@ from .permissions import (
     AdminOrReadOnly,
     AdminPermissions,
     AuthorOrReadOnly,
-    ModeratorPermissions,
-    UserPermissions,
+    ModeratorAndAdminPermissions,
+    AuthorOrReviewerOrReadOnly,
 )
 from .serializers import (
     CategorySerializer,
@@ -93,7 +93,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         methods=["get", "patch"],
         url_path="me",
-        permission_classes=(UserPermissions,),
+        permission_classes=(IsAuthenticated,),
         detail=False,
     )
     def get_self_user(self, request):
@@ -108,38 +108,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
-
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = [
-                AllowAny,
-            ]
-        else:
-            self.permission_classes = [
-                AdminPermissions,
-            ]
-        return super(TitleViewSet, self).get_permissions()
+    permission_classes = (AdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
             return TitleListSerializer
         return TitleSerializer
-
-    def get_queryset(self):
-        if self.action in ("list", "retrieve"):
-            if (
-                Title.objects.prefetch_related("reviews").order_by("name")
-                is not None
-            ):
-                return Title.objects.all().annotate(
-                    rating=Avg("reviews__score")
-                )
-            return Title.objects.all().set(rating=0)
-        return Title.objects.all()
 
 
 class GenreViewSet(
@@ -173,21 +151,7 @@ class CategoryViewSet(
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = [
-                AllowAny,
-            ]
-        elif self.request.method == "DELETE":
-            self.permission_classes = [
-                ModeratorPermissions,
-            ]
-        else:
-            self.permission_classes = [
-                AuthorOrReadOnly,
-            ]
-        return super(ReviewViewSet, self).get_permissions()
-
+    permission_classes = (AuthorOrReviewerOrReadOnly,)
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
 
@@ -203,21 +167,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = [
-                AllowAny,
-            ]
-        elif self.request.method == "DELETE":
-            self.permission_classes = [
-                ModeratorPermissions,
-            ]
-        else:
-            self.permission_classes = [
-                AuthorOrReadOnly,
-            ]
-        return super(CommentViewSet, self).get_permissions()
-
+    permission_classes = (AuthorOrReviewerOrReadOnly, )
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 

@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import (
@@ -7,6 +5,9 @@ from django.core.validators import (
     MinValueValidator,
 )
 from django.db import models
+
+from .validators import validate_year
+
 
 USER = "user"
 MODERATOR = "moderator"
@@ -40,32 +41,28 @@ class User(AbstractUser):
         return self.username
 
 
-class Category(models.Model):
-    name = models.CharField("Категория", max_length=256)
+class BaseDescription(models.Model):
+    name = models.CharField("Имя", max_length=256)
     slug = models.SlugField(unique=True, max_length=50)
 
-    def __str__(self):
-        return self.name
-
-
-class Genre(models.Model):
-    name = models.CharField("Жанр", max_length=256)
-    slug = models.SlugField(unique=True)
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.name
+
+
+class Category(BaseDescription):
+    pass
+
+
+class Genre(BaseDescription):
+    pass
 
 
 class Title(models.Model):
-    name = models.CharField("Название", max_length=256)
-    year = models.IntegerField(
-        "Год выпуска",
-        validators=[
-            MaxValueValidator(datetime.datetime.now().year),
-            MinValueValidator(0),
-        ],
-        default=1900,
-    )
+    name = models.TextField("Название")
+    year = models.IntegerField("Год выпуска", validators=[validate_year])
     description = models.TextField(blank=True, null=True)
     genre = models.ManyToManyField(Genre, related_name="titles")
     category = models.ForeignKey(
@@ -86,7 +83,7 @@ class Review(models.Model):
     text = models.TextField()
     score = models.IntegerField(
         default=0,
-        validators=[MaxValueValidator(10), MinValueValidator(0)],
+        validators=[MaxValueValidator(10), MinValueValidator(1)],
     )
     pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
 
