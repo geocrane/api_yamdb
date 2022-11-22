@@ -15,12 +15,10 @@ from .views import (
 app_name = "api"
 
 v1_router = DefaultRouter()
-v1_router.register("users", UserViewSet, basename="user")
-v1_router.register(r"titles", TitleViewSet)
-v1_router.register(r"genres", GenreViewSet)
-v1_router.register(r"categories", CategoryViewSet)
-v1_router.register(r"comments", CommentViewSet, basename="comments")
-v1_router.register(r"reviews", ReviewViewSet, basename="reviews")
+v1_router.register("users", UserViewSet, basename="users")
+v1_router.register(r"titles", TitleViewSet, basename="titles")
+v1_router.register(r"genres", GenreViewSet, basename="genres")
+v1_router.register(r"categories", CategoryViewSet, basename="categories")
 v1_router.register(
     r"titles/(?P<title_id>\d+)/reviews", ReviewViewSet, basename="reviews"
 )
@@ -30,17 +28,12 @@ v1_router.register(
     basename="comments",
 )
 
+auth_rotes = [
+    path("auth/signup/", SignUpAPIView.as_view(), name="signup"),
+    path("auth/token/", GetTokenAPIView.as_view(), name="token"),
+]
 
 urlpatterns = [
     path("v1/", include(v1_router.urls)),
-    path(
-        "v1/auth/signup/",
-        SignUpAPIView.as_view(),
-        name="signup",
-    ),
-    path(
-        "v1/auth/token/",
-        GetTokenAPIView.as_view(),
-        name="token_obtain_pair",
-    ),
+    path("v1/", include(auth_rotes)),
 ]

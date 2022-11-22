@@ -6,7 +6,7 @@ class AdminPermissions(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.auth:
             return False
-        if request.user.role in (ADMIN,) or request.user.is_staff:
+        if request.user.is_admin or request.user.is_staff:
             return True
 
 
@@ -16,7 +16,7 @@ class AdminOrReadOnly(permissions.BasePermission):
             return True
         if not request.auth:
             return False
-        if request.user.role in (ADMIN) or request.user.is_staff:
+        if request.user.is_admin or request.user.is_staff:
             return True
         return False
 

@@ -4,41 +4,24 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-
-class SignUpSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        if data.get("username") == "me":
-            raise serializers.ValidationError("Имя 'me' недопустимо")
-        return data
-
-    class Meta:
-        model = User
-        fields = ["username", "email"]
+from .validators import validate_username, is_email_exist, is_user_exist, validate_year
 
 
-class GetTokenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["username"]
+class SignUpSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        validators=[validate_username, is_user_exist]
+    )
+    email = serializers.EmailField(validators=[is_email_exist])
+
+
+class GetTokenSerializer(serializers.Serializer):
+    username = serializers.CharField(validators=[validate_username])
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "bio",
-            "role",
-        )
-
-
-class NotRoleChanging(serializers.ModelSerializer):
-    username = serializers.CharField(required=False)
-    email = serializers.EmailField(required=False)
-    role = serializers.CharField(read_only=True)
+    def validate_username(self, value):
+        validate_username(value)
+        return value
 
     class Meta:
         model = User
@@ -50,6 +33,12 @@ class NotRoleChanging(serializers.ModelSerializer):
             "bio",
             "role",
         )
+
+
+class RoleReadOnly(UserSerializer):
+
+    class Meta(UserSerializer.Meta):
+        read_only_fields = ('role',)
 
 
 class CategorySerializer(serializers.ModelSerializer):

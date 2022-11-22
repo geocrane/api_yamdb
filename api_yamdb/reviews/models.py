@@ -1,7 +1,11 @@
 import datetime
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
 from django.db import models
 
 USER = "user"
@@ -11,15 +15,29 @@ ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    password = models.CharField(default="", max_length=128)
+    username = models.CharField(
+        max_length=150, unique=True, validators=[UnicodeUsernameValidator]
+    )
+    email = models.EmailField(max_length=254, unique=True)
+    first_name = models.CharField(max_length=150, default="")
+    last_name = models.CharField(max_length=150, default="")
     bio = models.TextField(null=True)
     role = models.CharField(
-        max_length=255, choices=ROLES, default=USER, null=True
+        max_length=max(len(role[0]) for role in ROLES),
+        choices=ROLES,
+        default=USER,
     )
 
+    @property
+    def is_admin(self):
+        return bool(self.role == ADMIN)
+
+    @property
+    def is_moderator(self):
+        return bool(self.role == MODERATOR)
+
     def __str__(self):
-        return self.email
+        return self.username
 
 
 class Category(models.Model):
