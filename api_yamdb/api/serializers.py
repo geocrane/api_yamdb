@@ -19,22 +19,9 @@ class GetTokenSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "bio",
-            "role",
-        )
-
-
-class NotRoleChanging(serializers.ModelSerializer):
-    username = serializers.CharField(required=False)
-    email = serializers.EmailField(required=False)
-    role = serializers.CharField(read_only=True)
+    def validate_username(self, value):
+        validate_username(value)
+        return value
 
     class Meta:
         model = User
@@ -46,6 +33,12 @@ class NotRoleChanging(serializers.ModelSerializer):
             "bio",
             "role",
         )
+
+
+class RoleReadOnly(UserSerializer):
+
+    class Meta:
+        read_only_fields = ['role']
 
 
 class CategorySerializer(serializers.ModelSerializer):
