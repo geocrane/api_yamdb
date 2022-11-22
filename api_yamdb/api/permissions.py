@@ -1,5 +1,4 @@
 from rest_framework import permissions
-from reviews.models import ADMIN, MODERATOR, USER
 
 
 class AdminPermissions(permissions.BasePermission):
