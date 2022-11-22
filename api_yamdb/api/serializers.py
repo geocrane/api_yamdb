@@ -3,7 +3,7 @@ import datetime as dt
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
-
+from django.shortcuts import get_object_or_404
 from .validators import validate_username, is_email_exist, is_user_exist
 
 
@@ -102,20 +102,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ("id", "text", "author", "score", "pub_date")
 
-    def validate_score(self, value):
-        if not (1 <= value <= 10):
-            raise serializers.ValidationError("Оцените от 0 до 10!")
-        return value
-
     def validate(self, data):
-        if self.context["request"].method != "POST":
-            return data
-        author = self.context["request"].user
-        title_id = self.context["view"].kwargs.get("title_id")
-        if Review.objects.filter(author=author, title__id=title_id).exists():
-            raise serializers.ValidationError(
-                "Нельзя оставлять больше одного отзыва"
-            )
+        request = self.context['request']
+        author = request.user
+        title_id = self.context['view'].kwargs.get('title_id')
+        title = Title.objects.filter(pk=title_id)
+        if request.method == 'POST':
+            if title:
+                if Review.objects.filter(title=title[0], author=author):
+                    raise serializers.ValidationError(
+                        "Нельзя оставлять больше одного отзыва"
+                    )
         return data
 
 
