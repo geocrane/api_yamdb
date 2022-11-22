@@ -40,31 +40,31 @@ class User(AbstractUser):
         return self.username
 
 
-class Category(models.Model):
-    name = models.CharField("Категория", max_length=256)
+class BaseDescription(models.Model):
+
+    class Meta:
+        abstract = True
+
+    name = models.CharField("Имя", max_length=256)
     slug = models.SlugField(unique=True, max_length=50)
 
     def __str__(self):
         return self.name
 
 
-class Genre(models.Model):
-    name = models.CharField("Жанр", max_length=256)
-    slug = models.SlugField(unique=True)
+class Category(BaseDescription):
+    pass
 
-    def __str__(self):
-        return self.name
+
+class Genre(BaseDescription):
+    pass
 
 
 class Title(models.Model):
-    name = models.CharField("Название", max_length=256)
+    name = models.TextField("Название")
     year = models.IntegerField(
         "Год выпуска",
-        validators=[
-            MaxValueValidator(datetime.datetime.now().year),
-            MinValueValidator(0),
-        ],
-        default=1900,
+        validators=[MaxValueValidator(datetime.datetime.now().year), ]
     )
     description = models.TextField(blank=True, null=True)
     genre = models.ManyToManyField(Genre, related_name="titles")
