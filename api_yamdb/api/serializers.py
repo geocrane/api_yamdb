@@ -1,8 +1,11 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from django.shortcuts import get_object_or_404
-from .validators import validate_username, is_email_exist, is_user_exist, validate_year
+from .validators import (
+    validate_username,
+    is_email_exist,
+    is_user_exist,
+)
+from reviews.validators import validate_year
 
 
 class SignUpSerializer(serializers.Serializer):
@@ -34,9 +37,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RoleReadOnly(UserSerializer):
-
     class Meta(UserSerializer.Meta):
-        read_only_fields = ('role',)
+        read_only_fields = ("role",)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -72,19 +74,23 @@ class TitleListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ("id",
-                  "name",
-                  "year",
-                  "rating",
-                  "description",
-                  "genre",
-                  "category")
-        read_only_fields = ("name",
-                            "year",
-                            "rating",
-                            "description",
-                            "genre",
-                            "category")
+        fields = (
+            "id",
+            "name",
+            "year",
+            "rating",
+            "description",
+            "genre",
+            "category",
+        )
+        read_only_fields = (
+            "name",
+            "year",
+            "rating",
+            "description",
+            "genre",
+            "category",
+        )
 
     def get_rating(self, obj):
         return obj.rating
@@ -102,11 +108,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
 
     def validate(self, data):
-        request = self.context['request']
+        request = self.context["request"]
         author = request.user
-        title_id = self.context['view'].kwargs.get('title_id')
+        title_id = self.context["view"].kwargs.get("title_id")
         title = Title.objects.filter(pk=title_id)
-        if request.method == 'POST':
+        if request.method == "POST":
             if title:
                 if Review.objects.filter(title=title[0], author=author):
                     raise serializers.ValidationError(

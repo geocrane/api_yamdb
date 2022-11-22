@@ -17,6 +17,7 @@ from .permissions import (
     AdminPermissions,
     AuthorOrReadOnly,
     ModeratorAndAdminPermissions,
+    AuthorOrReviewerOrReadOnly,
 )
 from .serializers import (
     CategorySerializer,
@@ -150,21 +151,7 @@ class CategoryViewSet(
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = [
-                AllowAny,
-            ]
-        elif self.request.method == "DELETE":
-            self.permission_classes = [
-                ModeratorAndAdminPermissions,
-            ]
-        else:
-            self.permission_classes = [
-                AuthorOrReadOnly,
-            ]
-        return super(ReviewViewSet, self).get_permissions()
-
+    permission_classes = (AuthorOrReviewerOrReadOnly,)
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
 
@@ -180,21 +167,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    def get_permissions(self):
-        if self.request.method == "GET":
-            self.permission_classes = [
-                AllowAny,
-            ]
-        elif self.request.method == "DELETE":
-            self.permission_classes = [
-                ModeratorAndAdminPermissions,
-            ]
-        else:
-            self.permission_classes = [
-                AuthorOrReadOnly,
-            ]
-        return super(CommentViewSet, self).get_permissions()
-
+    permission_classes = (AuthorOrReviewerOrReadOnly, )
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 

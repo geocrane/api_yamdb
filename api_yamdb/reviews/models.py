@@ -5,7 +5,9 @@ from django.core.validators import (
     MinValueValidator,
 )
 from django.db import models
-from api.validators import validate_year
+
+from .validators import validate_year
+
 
 USER = "user"
 MODERATOR = "moderator"
@@ -40,12 +42,11 @@ class User(AbstractUser):
 
 
 class BaseDescription(models.Model):
+    name = models.CharField("Имя", max_length=256)
+    slug = models.SlugField(unique=True, max_length=50)
 
     class Meta:
         abstract = True
-
-    name = models.CharField("Имя", max_length=256)
-    slug = models.SlugField(unique=True, max_length=50)
 
     def __str__(self):
         return self.name
@@ -61,10 +62,7 @@ class Genre(BaseDescription):
 
 class Title(models.Model):
     name = models.TextField("Название")
-    year = models.IntegerField(
-        "Год выпуска",
-        validators=(validate_year,)
-    )
+    year = models.IntegerField("Год выпуска", validators=[validate_year])
     description = models.TextField(blank=True, null=True)
     genre = models.ManyToManyField(Genre, related_name="titles")
     category = models.ForeignKey(

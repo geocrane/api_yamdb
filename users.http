@@ -3,8 +3,8 @@ POST http://127.0.0.1:8000/api/v1/auth/signup/
 Content-Type: application/json
 
 {
-    "username": "user2",
-    "email": "user2@admin.admin"
+    "username": "admin",
+    "email": "admin@admin.admin"
 }
 
 ### Получить токен
@@ -12,20 +12,20 @@ POST http://localhost:8000/api/v1/auth/token/
 Content-Type: application/json
 
 {
-    "username": "user2",
-    "token": "662-fad515350fecce408908"
+    "username": "admin",
+    "confirmation_code": "663-8b4031cbdf537c9dc57b"
 }
 
 ###
 DELETE  http://localhost:8000/api/v1/users/me/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzMzNTQwLCJqdGkiOiI1OTI3YzhhZGY5ZTM0M2UyYmQ4YjM3Y2M0Yzk5MzkyMiIsInVzZXJfaWQiOjJ9.CEYPqJEO0TCORz5_0_OcJlu96b2HOHupS7WPw9h4ncM
 
 
 ### Получить всех пользователей
 GET http://localhost:8000/api/v1/users/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNTIzODExLCJpYXQiOjE2Njg5MzE4MTEsImp0aSI6ImUzYWQ2OTQzYzU2YTQ1ODM4YWU4YzA5M2Y3MmM0ZmVmIiwidXNlcl9pZCI6Mn0.1JtO4TwGmzVVWcr6yW6uCk5SUbxYL8u7aVO12X3age8
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzMzNTQwLCJqdGkiOiI1OTI3YzhhZGY5ZTM0M2UyYmQ4YjM3Y2M0Yzk5MzkyMiIsInVzZXJfaWQiOjJ9.CEYPqJEO0TCORz5_0_OcJlu96b2HOHupS7WPw9h4ncM
 
 
 
@@ -33,10 +33,10 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 ### Создать пользователя (только Админ)
 POST http://localhost:8000/api/v1/users/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNDU1NzE1LCJpYXQiOjE2Njg4NjM3MTUsImp0aSI6IjUxYWM1Yjk4NmU4MDRhNjA5ZWQ1ODE5OTgwOTBiN2I3IiwidXNlcl9pZCI6MX0.Dg7oBdaXxaS8MFDfZsJmuM6xqIy6bm-2sroziI71IWc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzMzNTQwLCJqdGkiOiI1OTI3YzhhZGY5ZTM0M2UyYmQ4YjM3Y2M0Yzk5MzkyMiIsInVzZXJfaWQiOjJ9.CEYPqJEO0TCORz5_0_OcJlu96b2HOHupS7WPw9h4ncM
 
 {
-    "username": "user7",
+    "username": "user2",
     "email": "user2@user.user"
 }
 
@@ -58,17 +58,18 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiY
 
 
 
-### Получить себя - user2
+### Получить себя - user777
 GET http://localhost:8000/api/v1/users/me/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNTI1ODA5LCJpYXQiOjE2Njg5MzM4MDksImp0aSI6ImU1NWE4ZmI2Yzg0ZjQ4ZGFhYmNjODlkOThmOTE4ZGQyIiwidXNlcl9pZCI6Nn0.AsOs9ioll-XcuMNG9272wnizVG4tcP86FkLgbu_f_SA
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzM2MjQ3LCJqdGkiOiI0YWQ4MmMzNWQ1NjU0NjliOWI2MzIzZmJlNjA3ZjMzYSIsInVzZXJfaWQiOjl9.qS5ZMy1ueHV1iHXPmnHuGB9ZWDI1CxCrSv8juJObl9A
 
-### Patch себя - user2
+### Patch себя - user777
 PATCH http://localhost:8000/api/v1/users/me/
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNTI1ODA5LCJpYXQiOjE2Njg5MzM4MDksImp0aSI6ImU1NWE4ZmI2Yzg0ZjQ4ZGFhYmNjODlkOThmOTE4ZGQyIiwidXNlcl9pZCI6Nn0.AsOs9ioll-XcuMNG9272wnizVG4tcP86FkLgbu_f_SA
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcxNzM2MjQ3LCJqdGkiOiI0YWQ4MmMzNWQ1NjU0NjliOWI2MzIzZmJlNjA3ZjMzYSIsInVzZXJfaWQiOjl9.qS5ZMy1ueHV1iHXPmnHuGB9ZWDI1CxCrSv8juJObl9A
 
 {
+    "username": "User7",
     "role": "admin",
     "bio": "My bio"
 }
