@@ -1,11 +1,8 @@
 from rest_framework import serializers
+
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from .validators import (
-    validate_username,
-    is_email_exist,
-    is_user_exist,
-)
 from reviews.validators import validate_year
+from .validators import is_email_exist, is_user_exist, validate_username
 
 
 class SignUpSerializer(serializers.Serializer):
