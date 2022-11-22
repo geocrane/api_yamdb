@@ -56,32 +56,12 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ("name", "slug")
         model = Category
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Category.objects.all(), fields=["name", "slug"]
-            )
-        ]
-
-    def validate(self, data):
-        if not data:
-            raise serializers.ValidationError("Заполните поля")
-        return data
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ("name", "slug")
         model = Genre
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Genre.objects.all(), fields=["name", "slug"]
-            )
-        ]
-
-    def validate(self, data):
-        if not data:
-            raise serializers.ValidationError("Заполните поля")
-        return data
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -95,24 +75,12 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ("id", "name", "year", "description", "genre", "category")
         model = Title
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Title.objects.all(), fields=["name", "year"]
-            )
-        ]
 
     def validate_year(self, value):
         year = dt.date.today().year
         if not 0 <= value <= year:
             raise serializers.ValidationError("Проверьте год!")
         return value
-
-    def validate(self, data):
-        if not data.get("category"):
-            raise serializers.ValidationError("Выберите категорию!")
-        if not data:
-            raise serializers.ValidationError("Заполните поля")
-        return data
 
 
 class TitleListSerializer(serializers.ModelSerializer):
