@@ -4,22 +4,16 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-
-class SignUpSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        if data.get("username") == "me":
-            raise serializers.ValidationError("Имя 'me' недопустимо")
-        return data
-
-    class Meta:
-        model = User
-        fields = ["username", "email"]
+from .validators import validate_username, validate_email
 
 
-class GetTokenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["username"]
+class SignUpSerializer(serializers.Serializer):
+    username = serializers.CharField(validators=[validate_username])
+    email = serializers.EmailField(validators=[validate_email])
+
+
+class GetTokenSerializer(serializers.Serializer):
+    username = serializers.CharField(validators=[validate_username])
 
 
 class UserSerializer(serializers.ModelSerializer):
