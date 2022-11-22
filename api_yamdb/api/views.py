@@ -64,7 +64,7 @@ class GetTokenAPIView(APIView):
         username = serializer.validated_data["username"]
         user = get_object_or_404(User, username=username)
         if not default_token_generator.check_token(
-            user, request.data.get["token"]
+            user, request.data.get("token")
         ):
             return Response("Пользователь и код подтверждения - не совпадают")
         refresh = RefreshToken.for_user(user)
