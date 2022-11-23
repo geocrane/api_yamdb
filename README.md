@@ -1,5 +1,5 @@
 #Финальный проект по API
-Проект api_yamdb - учебный проект курса "backend-python" Яндекс-Практикума.
+Проект api_yamdb - учебный проект курса "backend-python" Яндекс-Практикума
 
 
 ##Используемые технологии и библиотеки:
@@ -8,7 +8,7 @@ django rest framework
 
 
 ##Установка:
-Клонировать репозиторий на локальную машину.
+Клонировать репозиторий на локальную машину
 Создать виртуальное окружение: $ python -m venv venv
 Установить зависимости: $ pip install -r requirements.txt
 Примененить миграций: $ python manage.py migrate
@@ -35,5 +35,5 @@ django rest framework
 ##Разработчики:
 [Евгения Почуева](https://github.com/Eugen-bal)
 [Сергей Елисеев](https://github.com/Serge170)
-[Сергей Журавлев](https://github.com/geocrane)
+[Сергей Журавлев](https://github.com/geocrane) 
 
