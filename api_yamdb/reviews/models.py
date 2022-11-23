@@ -1,9 +1,8 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .validators import validate_year
+from .validators import validate_year, validate_username
 
 USER = "user"
 MODERATOR = "moderator"
@@ -13,25 +12,25 @@ ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
 
 class User(AbstractUser):
     username = models.CharField(
-        max_length=150, unique=True, validators=[UnicodeUsernameValidator]
+        max_length=150, unique=True, validators=[validate_username]
     )
     email = models.EmailField(max_length=254, unique=True)
     first_name = models.CharField(max_length=150, default="")
     last_name = models.CharField(max_length=150, default="")
-    bio = models.TextField(null=True)
+    bio = models.TextField(blank=True)
     role = models.CharField(
-        max_length=max(len(role[0]) for role in ROLES),
+        max_length=max(len(role) for role, _ in ROLES),
         choices=ROLES,
         default=USER,
     )
 
     @property
     def is_admin(self):
-        return bool(self.role == ADMIN)
+        return self.is_superuser or self.is_staff or self.role == ADMIN
 
     @property
     def is_moderator(self):
-        return bool(self.role == MODERATOR)
+        return self.role == MODERATOR
 
     def __str__(self):
         return self.username
