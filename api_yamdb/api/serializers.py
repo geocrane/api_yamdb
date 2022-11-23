@@ -1,26 +1,33 @@
 from rest_framework import serializers
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from reviews.validators import validate_year
-from .validators import is_email_exist, is_user_exist, validate_username
-from django.shortcuts import get_object_or_404
+from reviews.validators import validate_year, validate_username
 
-class SignUpSerializer(serializers.Serializer):
+
+class SignUpDataSerializer(serializers.Serializer):
     username = serializers.CharField(
-        validators=[validate_username, is_user_exist]
+        max_length=150, validators=[validate_username]
     )
-    email = serializers.EmailField(validators=[is_email_exist])
+    email = serializers.EmailField(max_length=254)
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+        )
 
 
 class GetTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(validators=[validate_username])
+    username = serializers.CharField(
+        max_length=150, validators=[validate_username]
+    )
+    confirmation_code = serializers.CharField()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    def validate_username(self, value):
-        validate_username(value)
-        return value
-
     class Meta:
         model = User
         fields = (
@@ -31,6 +38,9 @@ class UserSerializer(serializers.ModelSerializer):
             "bio",
             "role",
         )
+
+    def validate_username(self, value):
+        return validate_username(value)
 
 
 class RoleReadOnly(UserSerializer):
