@@ -25,6 +25,7 @@ from .serializers import (
     ReviewSerializer,
     RoleReadOnly,
     SignUpSerializer,
+    SignUpDataSerializer,
     TitleListSerializer,
     TitleSerializer,
     UserSerializer,
@@ -38,15 +39,14 @@ class SignUpAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        username = request.data.get("username")
-        email = request.data.get("email")
+        serializer = SignUpDataSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data["username"]
+        email = serializer.validated_data["email"]
         request_data = dict(username=username, email=email)
-        user = User.objects.filter(username=username)
-        if user and (user[0].email == email):
-            user = User.objects.get(**request_data)
-        else:
+        if not User.objects.filter(**request_data):
             SignUpSerializer(data=request.data).is_valid(raise_exception=True)
-            user = User.objects.create(**request_data)
+        user, create = User.objects.get_or_create(**request_data)
         user.email_user(
             "Confirmation code",
             CONFIRMATION_MESSAGE.format(
@@ -61,8 +61,11 @@ class GetTokenAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        GetTokenSerializer(data=request.data).is_valid(raise_exception=True)
-        user = get_object_or_404(User, username=request.data.get("username"))
+        serializer = GetTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = get_object_or_404(
+            User, username=serializer.validated_data.get("username")
+        )
         if not default_token_generator.check_token(
             user, request.data.get("confirmation_code")
         ):
@@ -95,7 +98,7 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
     )
     def get_self_user(self, request):
-        if request.method != "PATCH":
+        if request.method == "GET":
             return Response(UserSerializer(request.user).data)
         serializer = RoleReadOnly(
             request.user, data=request.data, partial=True
@@ -107,10 +110,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
     permission_classes = (AdminOrReadOnly,)
+    ordering_fields = ("rating",)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -118,34 +122,27 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-class GenreViewSet(
+class BaseDescriptionViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
+    lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
+    permission_classes = (AdminOrReadOnly,)
+
+
+class GenreViewSet(BaseDescriptionViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
-    lookup_field = "slug"
-    pagination_class = LimitOffsetPagination
-    permission_classes = (AdminOrReadOnly,)
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
+class CategoryViewSet(BaseDescriptionViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
-    lookup_field = "slug"
-    pagination_class = LimitOffsetPagination
-    permission_classes = (AdminOrReadOnly,)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -153,15 +150,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
 
-    def get_title(self):
-        title_id = self.kwargs.get("title_id")
-        return get_object_or_404(Title, pk=title_id)
-
     def get_queryset(self):
-        return self.get_title().reviews.all()
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        return title.reviews.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, title=self.get_title())
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -170,14 +165,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        review_id = self.kwargs.get("review_id")
-        review = get_object_or_404(Review, pk=review_id)
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         return review.comments.all()
 
     def perform_create(self, serializer):
-        review_id = self.kwargs["review_id"]
-        serializer.save(
-            author=self.request.user,
-            review=get_object_or_404(Review, pk=review_id),
-        )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)

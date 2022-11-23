@@ -28,12 +28,12 @@ v1_router.register(
     basename="comments",
 )
 
-auth_rotes = [
+auth_routes = [
     path("auth/signup/", SignUpAPIView.as_view(), name="signup"),
     path("auth/token/", GetTokenAPIView.as_view(), name="token"),
 ]
 
 urlpatterns = [
     path("v1/", include(v1_router.urls)),
-    path("v1/", include(auth_rotes)),
+    path("v1/", include(auth_routes)),
 ]

@@ -1,26 +1,34 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from reviews.validators import validate_year
-from .validators import is_email_exist, is_user_exist, validate_username
+from reviews.validators import validate_year, validate_username
 
 
-class SignUpSerializer(serializers.Serializer):
+class SignUpDataSerializer(serializers.Serializer):
     username = serializers.CharField(
-        validators=[validate_username, is_user_exist]
+        max_length=150, validators=[validate_username]
     )
-    email = serializers.EmailField(validators=[is_email_exist])
+    email = serializers.EmailField(max_length=254)
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+        )
 
 
 class GetTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(validators=[validate_username])
+    username = serializers.CharField(
+        max_length=150, validators=[validate_username]
+    )
+    confirmation_code = serializers.CharField()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    def validate_username(self, value):
-        validate_username(value)
-        return value
-
     class Meta:
         model = User
         fields = (
@@ -31,6 +39,9 @@ class UserSerializer(serializers.ModelSerializer):
             "bio",
             "role",
         )
+
+    def validate_username(self, value):
+        return validate_username(value)
 
 
 class RoleReadOnly(UserSerializer):
@@ -67,19 +78,12 @@ class TitleSerializer(serializers.ModelSerializer):
 class TitleListSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField()
 
     class Meta:
         model = Title
-        fields = (
-            "id",
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
-        )
+
+        fields = "__all__"
         read_only_fields = (
             "name",
             "year",
@@ -88,9 +92,6 @@ class TitleListSerializer(serializers.ModelSerializer):
             "genre",
             "category",
         )
-
-    def get_rating(self, obj):
-        return obj.rating
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -105,16 +106,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
 
     def validate(self, data):
-        request = self.context["request"]
-        author = request.user
-        title_id = self.context["view"].kwargs.get("title_id")
-        title = Title.objects.filter(pk=title_id)
-        if request.method == "POST":
-            if title:
-                if Review.objects.filter(title=title[0], author=author):
-                    raise serializers.ValidationError(
-                        "Нельзя оставлять больше одного отзыва"
-                    )
+        if self.context['request'].method == 'POST':
+            request = self.context['request']
+            title_id = self.context.get('view') .kwargs.get('title_id')
+            title = get_object_or_404(Title, pk=title_id)
+            if Review.objects.filter(
+                title=title, author=request.user
+            ).exists():
+                raise serializers.ValidationError(
+                    "Нельзя оставлять больше одного отзыва"
+                )
         return data
 
 

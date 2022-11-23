@@ -1,43 +1,39 @@
 #Финальный проект по API
-Проект api_yamdb - учебный проект курса "backend-python" от Яндекс-Практикума.
+Проект api_yamdb - учебный проект курса "backend-python" Яндекс-Практикума
 
 
-#Используемые пакеты:
-requests==2.26.0
-django==2.2.16
-djangorestframework==3.12.4
-django-filter==21.1
-djangorestframework-simplejwt==4.7.2
-PyJWT==2.1.0
-pytest==6.2.4
-pytest-django==4.4.0
-pytest-pythonpath==0.7.3
+##Используемые технологии и библиотеки:
+python 3.7
+django rest framework
 
 
 ##Установка:
-Клонируем репозиторий на локальную машину:
-$ git clone https://github.com/Serge170/api_final_yatube Создаем виртуальное окружение:
-$ python -m venv venv Устанавливаем зависимости:
-$ pip install -r requirements.txt Создание и применение миграций:
-$ python manage.py makemigrations и $ python manage.py migrate Запускаем django сервер:
-$ python manage.py runserver #####Все готово к использованию API!
+Клонировать репозиторий на локальную машину
+Создать виртуальное окружение: $ python -m venv venv
+Установить зависимости: $ pip install -r requirements.txt
+Примененить миграций: $ python manage.py migrate
+Запустить django сервер: $ python manage.py runserver
 
 
-##Документация ReDoc:
-http://127.0.0.1:8000/redoc/
+##Документация:
+[ReDoc](http://127.0.0.1:8000/redoc/)
+
+
+##Заполнение базы данных из CSV:
+Используйте команду: $ python manage.py loadtestdata
 
 
 ##Примеры запросов к API:
 Получить список всех постов (GET): http://127.0.0.1:8000/api/v1/posts/
-Получить определенный пост (GET): % http://127.0.0.1:8000/api/v1/posts/1/
-Получить коментарии определенного поста (GET): % http://127.0.0.1:8000/api/v1/posts/1/comments/
-Получить определенный коментарии к посту (GET): % http://127.0.0.1:8000/api/v1/posts/1/comments/1/
-Получить список всех групп (GET): % http://127.0.0.1:8000/api/v1/groups/
-Создать новый пост (POST): % (Требуется аутентификация) http://127.0.0.1:8000/api/v1/posts/
+Получить определенный пост (GET): http://127.0.0.1:8000/api/v1/posts/1/
+Получить коментарии определенного поста (GET): http://127.0.0.1:8000/api/v1/posts/1/comments/
+Получить определенный коментарии к посту (GET): http://127.0.0.1:8000/api/v1/posts/1/comments/1/
+Получить список всех групп (GET): http://127.0.0.1:8000/api/v1/groups/
+Создать новый пост (требуется аутентификация) (POST): http://127.0.0.1:8000/api/v1/posts/
 
 
 ##Разработчики:
-Евгения Почуева - git: https://github.com/Eugen-bal
-Сергей Елисеев - git: https://github.com/Serge170
-Сергей Журавлев - git: https://github.com/geocrane
+[Евгения Почуева](https://github.com/Eugen-bal)
+[Сергей Елисеев](https://github.com/Serge170)
+[Сергей Журавлев](https://github.com/geocrane) 
 
