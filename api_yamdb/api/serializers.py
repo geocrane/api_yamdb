@@ -3,7 +3,7 @@ from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title, User
 from reviews.validators import validate_year
 from .validators import is_email_exist, is_user_exist, validate_username
-
+from django.shortcuts import get_object_or_404
 
 class SignUpSerializer(serializers.Serializer):
     username = serializers.CharField(
@@ -105,18 +105,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
 
     def validate(self, data):
-        request = self.context["request"]
-        author = request.user
-        title_id = self.context["view"].kwargs.get("title_id")
-        title = Title.objects.filter(pk=title_id)
-        if request.method == "POST":
-            if title:
-                if Review.objects.filter(title=title[0], author=author):
-                    raise serializers.ValidationError(
-                        "Нельзя оставлять больше одного отзыва"
-                    )
+        if self.context['request'].method == 'POST':
+            request = self.context['request']
+            title_id = self.context.get('view') .kwargs.get('title_id')
+            title = get_object_or_404(Title, pk=title_id)
+            if Review.objects.filter(
+                title=title, author=request.user
+            ).exists():
+                raise serializers.ValidationError(
+                    "Нельзя оставлять больше одного отзыва"
+                )
         return data
-
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
