@@ -9,7 +9,9 @@ FORBIDDEN_NAME = "me"
 
 def validate_year(value):
     if value > dt.date.today().year:
-        raise ValidationError("Проверьте год!")
+        raise ValidationError(
+            f"Проверьте год! Должен быть меньше {dt.date.today().year}"
+        )
     return value
 
 

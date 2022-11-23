@@ -110,10 +110,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
     permission_classes = (AdminOrReadOnly,)
+    ordering_fields = ("rating",)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -121,34 +122,27 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-class GenreViewSet(
+class BaseDescriptionViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
+    lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
+    permission_classes = (AdminOrReadOnly,)
+
+
+class GenreViewSet(BaseDescriptionViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
-    lookup_field = "slug"
-    pagination_class = LimitOffsetPagination
-    permission_classes = (AdminOrReadOnly,)
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
+class CategoryViewSet(BaseDescriptionViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ("name",)
-    lookup_field = "slug"
-    pagination_class = LimitOffsetPagination
-    permission_classes = (AdminOrReadOnly,)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

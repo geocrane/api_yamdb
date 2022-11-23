@@ -48,11 +48,17 @@ class BaseDescription(models.Model):
 
 
 class Category(BaseDescription):
-    pass
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
 
 
 class Genre(BaseDescription):
-    pass
+
+    class Meta:
+        verbose_name = "Жанр"
+        verbose_name_plural = "Жанры"
 
 
 class Title(models.Model):
@@ -68,37 +74,43 @@ class Title(models.Model):
         return self.name
 
 
-class Review(models.Model):
+class Note(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="reviews"
+        User, on_delete=models.CASCADE,
     )
+    text = models.TextField()
+    pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        abstract = True
+        ordering = ["-pub_date"]
+
+
+class Review(Note):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name="reviews"
     )
-    text = models.TextField()
     score = models.IntegerField(
         default=0,
         validators=[MaxValueValidator(10), MinValueValidator(1)],
     )
-    pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
 
-    class Meta:
+    class Meta(Note.Meta):
         constraints = [
             models.UniqueConstraint(
                 fields=["author", "title"],
                 name="only_one_review",
             ),
         ]
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
 
 
-class Comment(models.Model):
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comments"
-    )
+class Comment(Note):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name="comments"
     )
-    text = models.TextField()
-    pub_date = models.DateTimeField(
-        "Дата публикации комментария", auto_now_add=True, db_index=True
-    )
+
+    class Meta(Note.Meta):
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
