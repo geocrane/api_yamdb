@@ -25,6 +25,7 @@ from .serializers import (
     ReviewSerializer,
     RoleReadOnly,
     SignUpSerializer,
+    SignUpDataSerializer,
     TitleListSerializer,
     TitleSerializer,
     UserSerializer,
@@ -38,15 +39,14 @@ class SignUpAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        username = request.data.get("username")
-        email = request.data.get("email")
+        serializer = SignUpDataSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data["username"]
+        email = serializer.validated_data["email"]
         request_data = dict(username=username, email=email)
-        user = User.objects.filter(username=username)
-        if user and (user[0].email == email):
-            user = User.objects.get(**request_data)
-        else:
+        if not User.objects.filter(**request_data):
             SignUpSerializer(data=request.data).is_valid(raise_exception=True)
-            user = User.objects.create(**request_data)
+        user, create = User.objects.get_or_create(**request_data)
         user.email_user(
             "Confirmation code",
             CONFIRMATION_MESSAGE.format(
@@ -61,8 +61,11 @@ class GetTokenAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        GetTokenSerializer(data=request.data).is_valid(raise_exception=True)
-        user = get_object_or_404(User, username=request.data.get("username"))
+        serializer = GetTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = get_object_or_404(
+            User, username=serializer.validated_data.get("username")
+        )
         if not default_token_generator.check_token(
             user, request.data.get("confirmation_code")
         ):
@@ -95,7 +98,7 @@ class UserViewSet(viewsets.ModelViewSet):
         detail=False,
     )
     def get_self_user(self, request):
-        if request.method != "PATCH":
+        if request.method == "GET":
             return Response(UserSerializer(request.user).data)
         serializer = RoleReadOnly(
             request.user, data=request.data, partial=True
