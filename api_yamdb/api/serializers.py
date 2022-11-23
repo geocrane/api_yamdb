@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
 from reviews.validators import validate_year, validate_username
@@ -116,6 +117,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "Нельзя оставлять больше одного отзыва"
                 )
         return data
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
