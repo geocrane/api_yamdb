@@ -1,31 +1,36 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Category, Comment, Genre, Review, Title, User
+from reviews.models import (
+    Category,
+    Comment,
+    Genre,
+    Review,
+    Title,
+    User,
+    USERNAME_MAX_LENGTH,
+    EMAIL_MAX_LENGTH,
+)
 from reviews.validators import validate_year, validate_username
 
 
-class SignUpDataSerializer(serializers.Serializer):
+class SignUpSerializer(serializers.Serializer):
     username = serializers.CharField(
-        max_length=150, validators=[validate_username]
+        max_length=USERNAME_MAX_LENGTH,
+        validators=[validate_username],
     )
-    email = serializers.EmailField(max_length=254)
-
-
-class SignUpSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            "username",
-            "email",
-        )
+    email = serializers.EmailField(
+        max_length=EMAIL_MAX_LENGTH
+    )
 
 
 class GetTokenSerializer(serializers.Serializer):
     username = serializers.CharField(
-        max_length=150, validators=[validate_username]
+        max_length=USERNAME_MAX_LENGTH,
+        validators=[validate_username],
+        required=True,
     )
-    confirmation_code = serializers.CharField()
+    confirmation_code = serializers.CharField(max_length=None, required=True)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -106,9 +111,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
 
     def validate(self, data):
-        if self.context['request'].method == 'POST':
-            request = self.context['request']
-            title_id = self.context.get('view') .kwargs.get('title_id')
+        if self.context["request"].method == "POST":
+            request = self.context["request"]
+            title_id = self.context.get("view").kwargs.get("title_id")
             title = get_object_or_404(Title, pk=title_id)
             if Review.objects.filter(
                 title=title, author=request.user
