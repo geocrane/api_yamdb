@@ -92,14 +92,7 @@ class TitleListSerializer(serializers.ModelSerializer):
             "id", "name", "year", "genre",
             "category", "description", "rating"
         )
-        read_only_fields = (
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
-        )
+        read_only_fields = fields
 
 
 class ReviewSerializer(serializers.ModelSerializer):
