@@ -11,11 +11,22 @@
 
 
 ## Установка:
-+ Клонировать репозиторий на локальную машину
-+ Создать виртуальное окружение: $ python -m venv venv
-+ Установить зависимости: $ pip install -r requirements.txt
-+ Примененить миграций: $ python manage.py migrate
-+ Запустить django сервер: $ python manage.py runserver
+Создать виртуальное окружение: 
+```sh
+$ python -m venv venv
+```
+Установить зависимости: 
+```sh
+$ pip install -r requirements.txt
+```
+Примененить миграций: 
+```sh
+$ python manage.py migrate
+```
+Запустить django сервер: 
+```sh
+$ python manage.py runserver
+```
 
 
 ## Документация:
@@ -23,8 +34,9 @@
 
 
 ## Заполнение базы данных из CSV:
+```sh
 $ python manage.py loadtestdata
-
+```
 
 ## Примеры запросов к API:
 + Получить список всех постов (GET): http://127.0.0.1:8000/api/v1/posts/
