@@ -88,7 +88,10 @@ class TitleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
 
-        fields = "__all__"
+        fields = (
+            "id", "name", "year", "genre",
+            "category", "description", "rating"
+        )
         read_only_fields = (
             "name",
             "year",
