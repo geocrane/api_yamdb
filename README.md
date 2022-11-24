@@ -23,7 +23,7 @@
 
 
 ## Заполнение базы данных из CSV:
-Используйте команду: $ python manage.py loadtestdata
+$ python manage.py loadtestdata
 
 
 ## Примеры запросов к API:
