@@ -150,7 +150,4 @@ dmypy.json
 media/
 
 request.http
-
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
+users.http
