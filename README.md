@@ -1,4 +1,4 @@
-# Финальный проект по API  
+# Финальный проект по API
 Проект api_yamdb - учебный проект курса "backend-python" Яндекс-Практикума
 
 
@@ -51,4 +51,3 @@ $ python manage.py loadtestdata
 + [Евгения Почуева](https://github.com/Eugen-bal)
 + [Сергей Елисеев](https://github.com/Serge170)
 + [Сергей Журавлев](https://github.com/geocrane)
-
