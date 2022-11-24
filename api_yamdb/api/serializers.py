@@ -111,8 +111,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
 
     def validate(self, data):
-        if self.context["request"].method == "POST":
-            request = self.context["request"]
+        request = self.context["request"]
+        if request.method == "POST":
             title_id = self.context.get("view").kwargs.get("title_id")
             title = get_object_or_404(Title, pk=title_id)
             if Review.objects.filter(
