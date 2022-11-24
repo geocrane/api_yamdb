@@ -11,19 +11,19 @@
 
 
 ## Установка:
-Создать виртуальное окружение:
+Создать виртуальное окружение: 
 ```sh
 $ python -m venv venv
 ```
-Установить зависимости:
+Установить зависимости: 
 ```sh
 $ pip install -r requirements.txt
 ```
-Примененить миграций:
+Примененить миграций: 
 ```sh
 $ python manage.py migrate
 ```
-Запустить django сервер:
+Запустить django сервер: 
 ```sh
 $ python manage.py runserver
 ```
