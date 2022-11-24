@@ -4,10 +4,10 @@
 
 ##Используемые технологии и библиотеки:
 Python 3.7
+Django 2.2
 Django REST framework 3.12
 Simple JWT 4.7
-Requests 2.26
-Django Filter 21.1
+SQLite3
 
 
 ##Установка:
