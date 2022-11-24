@@ -3,8 +3,11 @@
 
 
 ##Используемые технологии и библиотеки:
-python 3.7
-django rest framework
+Python 3.7
+Django REST framework 3.12
+Simple JWT 4.7
+Requests 2.26
+Django Filter 21.1
 
 
 ##Установка:
@@ -35,5 +38,5 @@ django rest framework
 ##Разработчики:
 [Евгения Почуева](https://github.com/Eugen-bal)
 [Сергей Елисеев](https://github.com/Serge170)
-[Сергей Журавлев](https://github.com/geocrane) 
+[Сергей Журавлев](https://github.com/geocrane)
 
