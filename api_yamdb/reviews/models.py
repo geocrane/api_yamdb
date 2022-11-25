@@ -50,6 +50,7 @@ class BaseDescription(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
@@ -83,14 +84,14 @@ class Title(models.Model):
 class Note(models.Model):
     author = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE, related_name="%(class)s"
     )
     text = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         abstract = True
-        ordering = ["-pub_date"]
+        ordering = ("-pub_date",)
 
 
 class Review(Note):

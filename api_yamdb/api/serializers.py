@@ -19,9 +19,7 @@ class SignUpSerializer(serializers.Serializer):
         max_length=USERNAME_MAX_LENGTH,
         validators=[validate_username],
     )
-    email = serializers.EmailField(
-        max_length=EMAIL_MAX_LENGTH
-    )
+    email = serializers.EmailField(max_length=EMAIL_MAX_LENGTH)
 
 
 class GetTokenSerializer(serializers.Serializer):
@@ -89,17 +87,15 @@ class TitleListSerializer(serializers.ModelSerializer):
         model = Title
 
         fields = (
-            "id", "name", "year", "genre",
-            "category", "description", "rating"
-        )
-        read_only_fields = (
+            "id",
             "name",
             "year",
-            "rating",
-            "description",
             "genre",
             "category",
+            "description",
+            "rating",
         )
+        read_only_fields = fields
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -115,15 +111,14 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         request = self.context["request"]
-        if request.method == "POST":
-            title_id = self.context.get("view").kwargs.get("title_id")
-            title = get_object_or_404(Title, pk=title_id)
-            if Review.objects.filter(
-                title=title, author=request.user
-            ).exists():
-                raise serializers.ValidationError(
-                    "Нельзя оставлять больше одного отзыва"
-                )
+        if request.method != "POST":
+            return data
+        title_id = self.context.get("view").kwargs.get("title_id")
+        title = get_object_or_404(Title, pk=title_id)
+        if Review.objects.filter(title=title, author=request.user).exists():
+            raise serializers.ValidationError(
+                "Нельзя оставлять больше одного отзыва"
+            )
         return data
 
 
