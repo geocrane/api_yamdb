@@ -11,109 +11,109 @@ class Command(BaseCommand):
 
         print("Загрузка данных из csv в базу:")
         model = User
-        if model.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if model.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/users.csv")):
+            model.objects.create(
+                id=row["id"],
+                username=row["username"],
+                email=row["email"],
+                role=row["role"],
+                bio=row["bio"],
+                first_name=row["first_name"],
+                last_name=row["last_name"],
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/users.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    username=row["username"],
-                    email=row["email"],
-                    role=row["role"],
-                    bio=row["bio"],
-                    first_name=row["first_name"],
-                    last_name=row["last_name"],
-                )
 
         model = Category
-        if model.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if model.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/category.csv")):
+            model.objects.create(
+                id=row["id"],
+                name=row["name"],
+                slug=row["slug"],
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/category.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    name=row["name"],
-                    slug=row["slug"],
-                )
 
         model = Genre
-        if model.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if model.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/genre.csv")):
+            model.objects.create(
+                id=row["id"],
+                name=row["name"],
+                slug=row["slug"],
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/genre.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    name=row["name"],
-                    slug=row["slug"],
-                )
 
         model = Title
-        if model.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if model.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/titles.csv")):
+            model.objects.create(
+                id=row["id"],
+                name=row["name"],
+                year=row["year"],
+                category=Category.objects.get(id=row["category"]),
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/titles.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    name=row["name"],
-                    year=row["year"],
-                    category=Category.objects.get(id=row["category"]),
-                )
 
         model = Title.genre.through
-        if Title.genre.through.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if Title.genre.through.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/genre_title.csv")):
+            model.objects.create(
+                id=row["id"],
+                title_id=row["title_id"],
+                genre_id=row["genre_id"],
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/genre_title.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    title_id=row["title_id"],
-                    genre_id=row["genre_id"],
-                )
 
         model = Review
-        if model.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if model.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/review.csv")):
+            model.objects.create(
+                id=row["id"],
+                title_id=row["title_id"],
+                text=row["text"],
+                author=User.objects.get(id=row["author"]),
+                score=row["score"],
+                pub_date=row["pub_date"],
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/review.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    title_id=row["title_id"],
-                    text=row["text"],
-                    author=User.objects.get(id=row["author"]),
-                    score=row["score"],
-                    pub_date=row["pub_date"],
-                )
 
         model = Comment
-        if model.objects.exists():
-            print(
-                f"{model.__name__} содержит данные, отменена загрузки"
+        # if model.objects.exists():
+        #     print(
+        #         f"{model.__name__} содержит данные, отменена загрузки"
+        #     )
+        # else:
+        print(f"Загружаю {model.__name__}")
+        for row in DictReader(open("static/data/comments.csv")):
+            model.objects.create(
+                id=row["id"],
+                review_id=row["review_id"],
+                text=row["text"],
+                author=User.objects.get(id=row["author"]),
+                pub_date=row["pub_date"],
             )
-        else:
-            print(f"Загружаю {model.__name__}")
-            for row in DictReader(open("static/data/comments.csv")):
-                model.objects.create(
-                    id=row["id"],
-                    review_id=row["review_id"],
-                    text=row["text"],
-                    author=User.objects.get(id=row["author"]),
-                    pub_date=row["pub_date"],
-                )
