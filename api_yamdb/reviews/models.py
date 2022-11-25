@@ -4,6 +4,12 @@ from django.db import models
 
 from .validators import validate_year, validate_username
 
+USERNAME_MAX_LENGTH = 150
+EMAIL_MAX_LENGTH = 254
+FIRST_NAME_LENGTH = 150
+LAST_NAME_LENGTH = 150
+
+
 USER = "user"
 MODERATOR = "moderator"
 ADMIN = "admin"
@@ -12,11 +18,13 @@ ROLES = [(USER, USER), (MODERATOR, MODERATOR), (ADMIN, ADMIN)]
 
 class User(AbstractUser):
     username = models.CharField(
-        max_length=150, unique=True, validators=[validate_username]
+        max_length=USERNAME_MAX_LENGTH,
+        unique=True,
+        validators=[validate_username],
     )
-    email = models.EmailField(max_length=254, unique=True)
-    first_name = models.CharField(max_length=150, default="")
-    last_name = models.CharField(max_length=150, default="")
+    email = models.EmailField(max_length=EMAIL_MAX_LENGTH, unique=True)
+    first_name = models.CharField(max_length=FIRST_NAME_LENGTH, default="")
+    last_name = models.CharField(max_length=LAST_NAME_LENGTH, default="")
     bio = models.TextField(blank=True)
     role = models.CharField(
         max_length=max(len(role) for role, _ in ROLES),
@@ -26,7 +34,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.is_superuser or self.is_staff or self.role == ADMIN
+        return self.is_staff or self.role == ADMIN
 
     @property
     def is_moderator(self):
@@ -42,20 +50,19 @@ class BaseDescription(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ("name",)
 
     def __str__(self):
         return self.name
 
 
 class Category(BaseDescription):
-
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
 
 class Genre(BaseDescription):
-
     class Meta:
         verbose_name = "Жанр"
         verbose_name_plural = "Жанры"
@@ -76,14 +83,15 @@ class Title(models.Model):
 
 class Note(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User,
+        on_delete=models.CASCADE, related_name="%(class)s"
     )
     text = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         abstract = True
-        ordering = ["-pub_date"]
+        ordering = ("-pub_date",)
 
 
 class Review(Note):

@@ -1,4 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -25,7 +26,6 @@ from .serializers import (
     ReviewSerializer,
     RoleReadOnly,
     SignUpSerializer,
-    SignUpDataSerializer,
     TitleListSerializer,
     TitleSerializer,
     UserSerializer,
@@ -39,14 +39,18 @@ class SignUpAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = SignUpDataSerializer(data=request.data)
+        serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data["username"]
-        email = serializer.validated_data["email"]
-        request_data = dict(username=username, email=email)
-        if not User.objects.filter(**request_data):
-            SignUpSerializer(data=request.data).is_valid(raise_exception=True)
-        user, create = User.objects.get_or_create(**request_data)
+        try:
+            user, create = User.objects.get_or_create(
+                username=serializer.validated_data["username"],
+                email=serializer.validated_data["email"],
+            )
+        except IntegrityError:
+            return Response(
+                "Логин или email используются другим пользователем",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         user.email_user(
             "Confirmation code",
             CONFIRMATION_MESSAGE.format(
@@ -114,7 +118,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
     permission_classes = (AdminOrReadOnly,)
-    ordering_fields = ("rating",)
+    ordering = ("rating",)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
@@ -150,13 +154,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
 
+    def get_title(self):
+        return get_object_or_404(Title, id=self.kwargs.get("title_id"))
+
     def get_queryset(self):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        return title.reviews.all()
+        return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        serializer.save(author=self.request.user, title=title)
+        serializer.save(author=self.request.user, title=self.get_title())
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -164,10 +169,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+    def get_review(self):
+        return get_object_or_404(Review, id=self.kwargs.get("review_id"))
+
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
-        return review.comments.all()
+        return self.get_review().comments.all()
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
-        serializer.save(author=self.request.user, review=review)
+        serializer.save(author=self.request.user, review=self.get_review())
