@@ -57,13 +57,13 @@ class BaseDescription(models.Model):
 
 
 class Category(BaseDescription):
-    class Meta:
+    class Meta(BaseDescription.Meta):
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
 
 class Genre(BaseDescription):
-    class Meta:
+    class Meta(BaseDescription.Meta):
         verbose_name = "Жанр"
         verbose_name_plural = "Жанры"
 
@@ -84,7 +84,7 @@ class Title(models.Model):
 class Note(models.Model):
     author = models.ForeignKey(
         User,
-        on_delete=models.CASCADE, related_name="%(class)s"
+        on_delete=models.CASCADE, related_name="%(class)ss"
     )
     text = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True, db_index=True)

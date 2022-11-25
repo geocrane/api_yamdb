@@ -1,7 +1,6 @@
 import datetime as dt
 import re
 
-from collections import OrderedDict
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
@@ -16,17 +15,12 @@ def validate_year(value):
     return value
 
 
-def clear_repeated_symbols(list):
-    symbols = "".join(
-        OrderedDict.fromkeys("".join(str(symbols) for symbols in list))
-    )
-    return symbols
-
-
 def validate_username(value):
-    forbidden_symbols = re.findall("[^-\\w]+", value)
+    forbidden_symbols = re.findall(r"[^-\w]+", value)
     if forbidden_symbols:
-        cleared_forbidden = clear_repeated_symbols(forbidden_symbols)
+        cleared_forbidden = "".join(
+            set("".join(str(symbols) for symbols in forbidden_symbols))
+        )
         raise serializers.ValidationError(
             f"Недопустимые символы в username: {cleared_forbidden} "
         )

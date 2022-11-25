@@ -42,7 +42,7 @@ class SignUpAPIView(APIView):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            user, create = User.objects.get_or_create(
+            user, _ = User.objects.get_or_create(
                 username=serializer.validated_data["username"],
                 email=serializer.validated_data["email"],
             )
@@ -118,7 +118,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
     permission_classes = (AdminOrReadOnly,)
-    ordering = ("rating",)
+    ordering = ("rating", "name")
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
