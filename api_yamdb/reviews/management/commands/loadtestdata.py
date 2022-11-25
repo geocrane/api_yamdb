@@ -17,7 +17,7 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/users.csv")):
+        for row in DictReader(open("static/data/users.csv", encoding="utf8")):
             model.objects.create(
                 id=row["id"],
                 username=row["username"],
@@ -35,7 +35,9 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/category.csv")):
+        for row in DictReader(
+            open("static/data/category.csv", encoding="utf8")
+        ):
             model.objects.create(
                 id=row["id"],
                 name=row["name"],
@@ -49,7 +51,7 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/genre.csv")):
+        for row in DictReader(open("static/data/genre.csv", encoding="utf8")):
             model.objects.create(
                 id=row["id"],
                 name=row["name"],
@@ -63,7 +65,7 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/titles.csv")):
+        for row in DictReader(open("static/data/titles.csv", encoding="utf8")):
             model.objects.create(
                 id=row["id"],
                 name=row["name"],
@@ -78,7 +80,9 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/genre_title.csv")):
+        for row in DictReader(
+            open("static/data/genre_title.csv", encoding="utf8")
+        ):
             model.objects.create(
                 id=row["id"],
                 title_id=row["title_id"],
@@ -92,7 +96,7 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/review.csv")):
+        for row in DictReader(open("static/data/review.csv", encoding="utf8")):
             model.objects.create(
                 id=row["id"],
                 title_id=row["title_id"],
@@ -109,7 +113,9 @@ class Command(BaseCommand):
         #     )
         # else:
         print(f"Загружаю {model.__name__}")
-        for row in DictReader(open("static/data/comments.csv")):
+        for row in DictReader(
+            open("static/data/comments.csv", encoding="utf8")
+        ):
             model.objects.create(
                 id=row["id"],
                 review_id=row["review_id"],
