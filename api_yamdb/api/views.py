@@ -118,7 +118,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
     pagination_class = LimitOffsetPagination
     permission_classes = (AdminOrReadOnly,)
-    ordering_fields = ("rating",)
+    ordering = ("rating",)
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):

@@ -19,9 +19,7 @@ class SignUpSerializer(serializers.Serializer):
         max_length=USERNAME_MAX_LENGTH,
         validators=[validate_username],
     )
-    email = serializers.EmailField(
-        max_length=EMAIL_MAX_LENGTH
-    )
+    email = serializers.EmailField(max_length=EMAIL_MAX_LENGTH)
 
 
 class GetTokenSerializer(serializers.Serializer):
@@ -89,8 +87,13 @@ class TitleListSerializer(serializers.ModelSerializer):
         model = Title
 
         fields = (
-            "id", "name", "year", "genre",
-            "category", "description", "rating"
+            "id",
+            "name",
+            "year",
+            "genre",
+            "category",
+            "description",
+            "rating",
         )
         read_only_fields = fields
 
