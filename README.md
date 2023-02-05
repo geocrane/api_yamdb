@@ -62,7 +62,7 @@ python3 manage.py runserver
 
 ## Заполнение базы данных из CSV:
 ```
-$ python manage.py loadtestdata
+python manage.py loadtestdata
 ```
 
 ## Документация и эндпойнты:
