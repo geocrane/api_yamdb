@@ -12,7 +12,6 @@
 
 ```
 Ресурсы API YaMDb:
-
     Ресурс auth: аутентификация.
     Ресурс users: пользователи.
     Ресурс titles: произведения, к которым пишут отзывы (определённый фильм, книга или песенка).
@@ -36,29 +35,34 @@
 ```
 git clone https://github.com/geocrane/api_yamdb.git
 ```
-
 Войдите в склонированный репозиторий.
 Для запуска на локальном сервере поочередно выполните:
 ```
 python3 -m venv venv
-
+```
+```
 source venv/bin/activate
-
+```
+```
 python3 -m pip install --upgrade pip
-
+```
+```
 pip install -r requirements.txt
-
+```
+```
 cd api_yamdb
-
+```
+```
 python3 manage.py migrate
-
+```
+```
 python3 manage.py runserver
 ```
 
 
 ## Заполнение базы данных из CSV:
 ```
-$ python manage.py loadtestdata
+python manage.py loadtestdata
 ```
 
 ## Документация и эндпойнты:
